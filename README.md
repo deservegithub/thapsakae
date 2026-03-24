@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# เว็บไซต์ตำบลทับสะแก 🌊🥥
 
-## Getting Started
+เว็บไซต์ตำบลทับสะแกแบบครบวงจร ธีมเมืองมะพร้าวทะเล พัฒนาด้วย Next.js 14+ พร้อมฟีเจอร์ Real-time Chat, Multi-language และระบบจองคิว
 
-First, run the development server:
+## 🎨 Features
 
+- ✅ **8+ หน้าหลัก**: หน้าแรก, ข่าว, ร้านค้า, ท่องเที่ยว, หางาน, เว็บบอร์ด, ซื้อขาย, จองคิว
+- ✅ **Real-time Chat**: แชทแบบ Real-time ด้วย Pusher
+- ✅ **Multi-language**: รองรับภาษาไทยและอังกฤษ (next-intl)
+- ✅ **Notification System**: การแจ้งเตือนแบบ Real-time
+- ✅ **Appointment Booking**: ระบบจองคิว/นัดหมาย
+- ✅ **Admin Dashboard**: ระบบจัดการแบบครบวงจร
+- ✅ **Ocean Theme**: ธีมสีฟ้าทะเล-มะพร้าว
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14+ (App Router), React 19, TypeScript
+- **Styling**: TailwindCSS 4, shadcn/ui
+- **Database**: Neon PostgreSQL (Serverless)
+- **ORM**: Drizzle ORM
+- **Authentication**: NextAuth.js v5
+- **Real-time**: Pusher
+- **Internationalization**: next-intl
+- **Icons**: Lucide React
+- **Forms**: React Hook Form + Zod
+- **State Management**: Zustand
+- **File Upload**: Uploadthing
+
+## 📦 Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd thapsakae
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install --legacy-peer-deps
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Setup environment variables:
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Configure your `.env` file with:
+- Database URL (Neon PostgreSQL)
+- NextAuth Secret
+- Pusher credentials
+- Uploadthing credentials
+- Google Maps API key (optional)
 
-## Learn More
+5. Generate and push database schema:
+```bash
+npm run db:push
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Run the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) to see the result.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Project Structure
 
-## Deploy on Vercel
+```
+thapsakae/
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── [locale]/     # Multi-language routes
+│   │   └── api/          # API routes
+│   ├── components/       # React components
+│   │   ├── ui/           # shadcn/ui components
+│   │   └── ...           # Feature components
+│   ├── lib/              # Utilities & configs
+│   │   ├── db/           # Database schema & client
+│   │   └── ...           # Other utilities
+│   ├── actions/          # Server Actions
+│   ├── hooks/            # Custom React hooks
+│   ├── i18n/             # Internationalization
+│   └── types/            # TypeScript types
+├── public/               # Static assets
+└── drizzle/              # Database migrations
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗄️ Database Schema
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **users**: ผู้ใช้งานและผู้ดูแลระบบ
+- **news**: ข่าวประชาสัมพันธ์
+- **shops**: ร้านค้าและบริการ
+- **tourism**: สถานที่ท่องเที่ยว
+- **tourism_reviews**: รีวิวสถานที่ท่องเที่ยว
+- **jobs**: ประกาศหางาน
+- **board_posts**: กระทู้เว็บบอร์ด
+- **board_comments**: ความคิดเห็นในกระทู้
+- **marketplace_items**: สินค้าในกระดานซื้อขาย
+- **appointments**: การจองคิว/นัดหมาย
+- **conversations**: การสนทนา
+- **messages**: ข้อความแชท
+- **notifications**: การแจ้งเตือน
+- **translations**: คำแปลสำหรับ Multi-language
+- **settings**: การตั้งค่าระบบ
+
+## 🚀 Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run db:generate` - Generate database migrations
+- `npm run db:migrate` - Run database migrations
+- `npm run db:push` - Push schema to database
+- `npm run db:studio` - Open Drizzle Studio
+
+## 🎨 Color Scheme (Ocean Theme)
+
+- **Primary**: Ocean Blue (#0EA5E9) - สีฟ้าทะเล
+- **Secondary**: Teal (#14B8A6) - สีเขียวมะพร้าว
+- **Accent**: Amber (#F59E0B) - สีทรายชายหาด
+- **Background**: Slate (#F8FAFC) - สีขาวอ่อน
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 👥 Contributors
+
+- Development Team - ตำบลทับสะแก

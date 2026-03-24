@@ -1,0 +1,166 @@
+{
+  "common": {
+    "home": "Home",
+    "news": "News",
+    "shops": "Shops",
+    "tourism": "Tourism",
+    "jobs": "Jobs",
+    "board": "Board",
+    "marketplace": "Marketplace",
+    "appointments": "Appointments",
+    "messages": "Messages",
+    "admin": "Admin",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close"
+  },
+  "home": {
+    "welcome": "Welcome to",
+    "title": "Thapsakae",
+    "subtitle": "Coconut Beach Town - Tourism and Livable Community",
+    "services": "Our Services",
+    "viewTourism": "Tourist Attractions",
+    "viewShops": "Shops & Services",
+    "stats": {
+      "attractions": "Tourist Attractions",
+      "shops": "Shops & Services",
+      "members": "Community Members",
+      "service": "Online Service"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Register to access all features and services"
+    }
+  },
+  "news": {
+    "title": "News & Announcements",
+    "description": "News and activities of Thapsakae",
+    "readMore": "Read More",
+    "loadMore": "Load More News",
+    "views": "views",
+    "category": "Category"
+  },
+  "shops": {
+    "title": "Shops & Services",
+    "description": "Find shops and services in Thapsakae",
+    "all": "All",
+    "restaurant": "Restaurants",
+    "retail": "Retail",
+    "service": "Services",
+    "openingHours": "Opening Hours",
+    "contact": "Contact",
+    "loadMore": "Load More Shops"
+  },
+  "tourism": {
+    "title": "Tourist Attractions",
+    "description": "Interesting attractions in Thapsakae",
+    "reviews": "Reviews",
+    "rating": "Rating",
+    "loadMore": "Load More Attractions"
+  },
+  "jobs": {
+    "title": "Jobs",
+    "description": "Job listings in Thapsakae",
+    "fullTime": "Full-time",
+    "partTime": "Part-time",
+    "contract": "Contract",
+    "salary": "Salary",
+    "location": "Location",
+    "loadMore": "Load More Jobs"
+  },
+  "board": {
+    "title": "Board",
+    "description": "Discuss and share with community",
+    "createPost": "Create New Post",
+    "comments": "Comments",
+    "likes": "Likes",
+    "pinned": "Pinned",
+    "loadMore": "Load More Posts"
+  },
+  "marketplace": {
+    "title": "Marketplace",
+    "description": "Buy and sell in Thapsakae community",
+    "createListing": "Create Listing",
+    "price": "Price",
+    "condition": {
+      "new": "New",
+      "used": "Used",
+      "likeNew": "Like New"
+    },
+    "chat": "Chat",
+    "loadMore": "Load More Items"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "description": "Book appointments for government services",
+    "yourAppointments": "Your Appointments",
+    "selectService": "Select Service to Book",
+    "availableSlots": "Available Slots",
+    "book": "Book",
+    "info": {
+      "title": "Important Information",
+      "hours": "Office Hours: Mon-Fri 08:30-16:30",
+      "advance": "Can book up to 30 days in advance",
+      "early": "Please arrive 10 minutes before appointment",
+      "cancel": "To cancel, please notify at least 1 day in advance"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "description": "Chat with buyers and sellers",
+    "searchConversations": "Search conversations...",
+    "selectConversation": "Select Conversation",
+    "selectConversationDescription": "Select a conversation from the list to start chatting",
+    "info": {
+      "title": "About Chat",
+      "realtime": "Real-time chat coming soon",
+      "files": "Can send images and files",
+      "notifications": "Get notified when new messages arrive",
+      "respect": "Please use polite language and respect each other"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "loading": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register"
+    },
+    "register": {
+      "title": "Register",
+      "name": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Register",
+      "loading": "Registering...",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login"
+    }
+  },
+  "footer": {
+    "description": "Thapsakae Subdistrict Website, Mueang District, Prachuap Khiri Khan Province",
+    "mainMenu": "Main Menu",
+    "services": "Services",
+    "contact": "Contact Us",
+    "rights": "All rights reserved."
+  }
+}
