@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { SessionProvider } from "@/components/providers/SessionProvider";
+import { LayoutShell } from "@/components/layout/LayoutShell";
 
 const prompt = Prompt({
   subsets: ["thai", "latin"],
@@ -27,9 +27,9 @@ export default function RootLayout({
       className={`${prompt.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-prompt" suppressHydrationWarning>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <SessionProvider>
+          <LayoutShell>{children}</LayoutShell>
+        </SessionProvider>
       </body>
     </html>
   );

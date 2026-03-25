@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Eye, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, use } from "react";
+import { useSession } from "next-auth/react";
 import { getBoardPostById, getCommentsByPostId, createComment } from "@/actions/board";
 
 export default function BoardDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { data: session } = useSession();
   const [post, setPost] = useState<any>(null);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -42,7 +44,7 @@ export default function BoardDetailPage({ params }: { params: Promise<{ id: stri
     const response = await createComment({
       postId: id,
       content: newComment,
-      userId: "temp-user-id", // ควรใช้ session.user.id จริง
+      userId: (session?.user as any)?.id || "",
     });
 
     if (response.success) {

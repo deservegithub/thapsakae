@@ -1,50 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { createNews } from "@/actions/news";
+import { getNewsById, updateNews } from "@/actions/news";
 
-export default function CreateNewsPage() {
+export default function EditNewsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
-  const { data: session } = useSession();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
-    slug: "",
     content: "",
     excerpt: "",
     category: "general",
     coverImage: "",
+    published: false,
   });
+
+  useEffect(() => {
+    loadNews();
+  }, [id]);
+
+  const loadNews = async () => {
+    const response = await getNewsById(id);
+    if (response.success && response.data) {
+      const n = response.data;
+      setFormData({
+        title: n.title,
+        content: n.content,
+        excerpt: n.excerpt,
+        category: n.category,
+        coverImage: n.coverImage || "",
+        published: n.published,
+      });
+    }
+    setLoading(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
 
-    const response = await createNews({
+    const response = await updateNews(id, {
       title: formData.title,
-      slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, "-"),
       content: formData.content,
       excerpt: formData.excerpt,
       category: formData.category,
       coverImage: formData.coverImage || undefined,
-      authorId: (session?.user as any)?.id || "",
+      published: formData.published,
     });
 
-    setLoading(false);
+    setSaving(false);
 
     if (response.success) {
-      alert("สร้างข่าวสำเร็จ");
+      alert("อัปเดตข่าวสำเร็จ");
       router.push("/admin/news");
     } else {
       alert(response.error || "เกิดข้อผิดพลาด");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p>กำลังโหลด...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -57,7 +84,7 @@ export default function CreateNewsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>เพิ่มข่าวใหม่</CardTitle>
+          <CardTitle>แก้ไขข่าว</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -70,18 +97,6 @@ export default function CreateNewsPage() {
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full px-3 py-2 border rounded-md"
                 required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="slug" className="block text-sm font-medium mb-2">Slug (URL)</label>
-              <input
-                id="slug"
-                type="text"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                placeholder="จะถูกสร้างอัตโนมัติถ้าไม่ระบุ"
-                className="w-full px-3 py-2 border rounded-md"
               />
             </div>
 
@@ -137,14 +152,23 @@ export default function CreateNewsPage() {
               />
             </div>
 
+            <div className="flex items-center gap-2">
+              <input
+                id="published"
+                type="checkbox"
+                checked={formData.published}
+                onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <label htmlFor="published" className="text-sm font-medium">เผยแพร่ข่าว</label>
+            </div>
+
             <div className="flex gap-4">
-              <Button type="submit" disabled={loading}>
-                {loading ? "กำลังบันทึก..." : "บันทึก"}
+              <Button type="submit" disabled={saving}>
+                {saving ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
               </Button>
               <Link href="/admin/news">
-                <Button type="button" variant="outline">
-                  ยกเลิก
-                </Button>
+                <Button type="button" variant="outline">ยกเลิก</Button>
               </Link>
             </div>
           </form>

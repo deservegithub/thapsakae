@@ -6,38 +6,53 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface BannerSlide {
-  id: number;
+  id: string;
   title: string;
   image: string;
   category: string;
   link: string;
 }
 
-const slides: BannerSlide[] = [
+const defaultSlides: BannerSlide[] = [
   {
-    id: 1,
-    title: "เทศบาลตำบลทับสะแกจัดงานประเพณีลอยกระทง ประจำปี 2567",
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&h=600&fit=crop",
-    category: "กิจกรรม",
-    link: "/news/1",
-  },
-  {
-    id: 2,
-    title: "โครงการพัฒนาชายหาดทับสะแก เพื่อส่งเสริมการท่องเที่ยว",
+    id: "default-1",
+    title: "ยินดีต้อนรับสู่ตำบลทับสะแก — เมืองมะพร้าวทะเล",
     image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=600&fit=crop",
-    category: "ท่องเที่ยว",
-    link: "/news/2",
+    category: "ทับสะแก",
+    link: "/tourism",
   },
   {
-    id: 3,
-    title: "ตลาดนัดชุมชนทับสะแก เปิดทุกวันเสาร์-อาทิตย์",
+    id: "default-2",
+    title: "ร้านค้าและบริการในชุมชนทับสะแก",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&h=600&fit=crop",
-    category: "ชุมชน",
-    link: "/news/3",
+    category: "ร้านค้า",
+    link: "/shops",
+  },
+  {
+    id: "default-3",
+    title: "ค้นหางานใกล้บ้าน ในตำบลทับสะแก",
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&h=600&fit=crop",
+    category: "หางาน",
+    link: "/jobs",
   },
 ];
 
-export function HeroBanner() {
+interface HeroBannerProps {
+  newsSlides?: { id: string; title: string; coverImage: string; category: string }[];
+}
+
+export function HeroBanner({ newsSlides }: HeroBannerProps) {
+  const slides: BannerSlide[] =
+    newsSlides && newsSlides.length > 0
+      ? newsSlides.map((n) => ({
+          id: n.id,
+          title: n.title,
+          image: n.coverImage,
+          category: n.category,
+          link: `/news/${n.id}`,
+        }))
+      : defaultSlides;
+
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {

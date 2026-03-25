@@ -40,7 +40,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container py-6">
-        <HeroBanner />
+        <HeroBanner newsSlides={newsList.filter(n => n.coverImage).map(n => ({ id: n.id, title: n.title, coverImage: n.coverImage, category: n.category }))} />
       </div>
       <div className="container py-6">
         <CategorySection />
