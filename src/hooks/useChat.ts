@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { pusherClient } from "@/lib/pusher";
+import { getPusherClient } from "@/lib/pusher";
 import { useSession } from "next-auth/react";
 
 export interface Message {
@@ -21,7 +21,7 @@ export function useChat(conversationId: string) {
   useEffect(() => {
     if (!conversationId) return;
 
-    const channel = pusherClient.subscribe(`conversation-${conversationId}`);
+    const channel = getPusherClient().subscribe(`conversation-${conversationId}`);
 
     channel.bind("pusher:subscription_succeeded", () => {
       setIsConnected(true);

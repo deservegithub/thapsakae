@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { messages } from "@/lib/db/schema";
-import { pusherServer } from "@/lib/pusher";
+import { getPusherServer } from "@/lib/pusher";
 import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       content,
     }).returning();
 
-    await pusherServer.trigger(
+    await getPusherServer().trigger(
       `conversation-${conversationId}`,
       "new-message",
       {

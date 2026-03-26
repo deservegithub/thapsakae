@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { pusherServer } from "@/lib/pusher";
+import { getPusherServer } from "@/lib/pusher";
 import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     .split("&")
     .map((str) => str.split("=")[1]);
 
-  const authResponse = pusherServer.authorizeChannel(
+  const authResponse = getPusherServer().authorizeChannel(
     decodeURIComponent(socketId),
     decodeURIComponent(channelName),
     {
