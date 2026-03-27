@@ -85,6 +85,7 @@ export async function updateBoardPost(id: string, data: {
   content?: string;
   category?: string;
   pinned?: boolean;
+  locked?: boolean;
 }) {
   try {
     await db.update(boardPosts).set(data).where(eq(boardPosts.id, id));
