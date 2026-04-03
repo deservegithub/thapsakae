@@ -5,6 +5,8 @@ import Link from "next/link";
 import { getPublishedNews } from "@/actions/news";
 import { FilterBar } from "@/components/ui/filter-bar";
 
+export const dynamic = "force-dynamic";
+
 const newsFilters = [
   { label: "ทั้งหมด", value: "" },
   { label: "ทั่วไป", value: "general" },
