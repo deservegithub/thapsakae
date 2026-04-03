@@ -70,6 +70,7 @@ export async function createNews(data: {
       coverImage: data.coverImage || "",
       category: data.category,
       authorId: data.authorId,
+      published: true,
     });
     revalidatePath("/news");
     revalidatePath("/admin/news");

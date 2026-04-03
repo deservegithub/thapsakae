@@ -74,6 +74,7 @@ export async function createShop(data: {
       phone: data.phone || null,
       openingHours: data.openingHours || null,
       ownerId: data.ownerId,
+      approved: true,
     });
     revalidatePath("/shops");
     revalidatePath("/admin/shops");

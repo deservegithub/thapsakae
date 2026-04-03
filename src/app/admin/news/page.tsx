@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
-import { getNews, deleteNews } from "@/actions/news";
+import { getNews, deleteNews, updateNews } from "@/actions/news";
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([]);
@@ -21,6 +21,15 @@ export default function AdminNewsPage() {
       setNews(response.data);
     }
     setLoading(false);
+  };
+
+  const handleTogglePublished = async (id: string, current: boolean) => {
+    const response = await updateNews(id, { published: !current });
+    if (response.success) {
+      loadNews();
+    } else {
+      alert(response.error || "เกิดข้อผิดพลาด");
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -78,6 +87,16 @@ export default function AdminNewsPage() {
                       </span>
                       <span>{new Date(item.createdAt).toLocaleDateString('th-TH')}</span>
                       <span>{item.views} ครั้ง</span>
+                      <button
+                        onClick={() => handleTogglePublished(item.id, item.published)}
+                        className={`px-2 py-0.5 rounded text-xs cursor-pointer ${
+                          item.published
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {item.published ? "เผยแพร่" : "ฉบับร่าง"}
+                      </button>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
