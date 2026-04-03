@@ -22,6 +22,7 @@ export function Footer() {
               <li><Link href="/jobs" className="hover:text-primary">หางาน</Link></li>
               <li><Link href="/board" className="hover:text-primary">เว็บบอร์ด</Link></li>
               <li><Link href="/marketplace" className="hover:text-primary">ซื้อขาย</Link></li>
+              <li><Link href="/appointments" className="hover:text-primary">จองคิว</Link></li>
             </ul>
           </div>
 

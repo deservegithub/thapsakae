@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { Menu, X, User, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 const navLinks = [
   { href: "/news", label: "ข่าวสาร" },
@@ -13,6 +14,7 @@ const navLinks = [
   { href: "/jobs", label: "หางาน" },
   { href: "/board", label: "เว็บบอร์ด" },
   { href: "/marketplace", label: "ซื้อขาย" },
+  { href: "/appointments", label: "จองคิว" },
 ];
 
 export function Header() {
@@ -41,6 +43,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           {session?.user ? (
             <>
+              <NotificationBell />
               {isAdmin && (
                 <Link href="/admin">
                   <Button variant="ghost" size="sm" className="hidden sm:flex">

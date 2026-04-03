@@ -14,6 +14,8 @@ import {
   Briefcase,
   MessageSquare,
   ShoppingCart,
+  CalendarDays,
+  Users,
   LogOut,
 } from "lucide-react";
 
@@ -25,6 +27,8 @@ const navItems = [
   { href: "/admin/jobs", icon: Briefcase, label: "หางาน" },
   { href: "/admin/board", icon: MessageSquare, label: "เว็บบอร์ด" },
   { href: "/admin/marketplace", icon: ShoppingCart, label: "ซื้อขาย" },
+  { href: "/admin/appointments", icon: CalendarDays, label: "จองคิว" },
+  { href: "/admin/users", icon: Users, label: "ผู้ใช้งาน" },
 ];
 
 interface AdminMobileNavProps {
