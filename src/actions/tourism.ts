@@ -2,8 +2,9 @@
 
 import { db } from "@/lib/db";
 import { tourism } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-check";
 
 export async function getTourismSpots() {
   try {
@@ -30,6 +31,18 @@ export async function getTourismSpotById(id: string) {
 
 type TourismCategory = "temple" | "nature" | "culture" | "other";
 
+export async function getRelatedTourismSpots(id: string, category: string, limit = 3) {
+  try {
+    const result = await db.select().from(tourism)
+      .where(and(eq(tourism.category, category as any), ne(tourism.id, id)))
+      .orderBy(desc(tourism.createdAt))
+      .limit(limit);
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: true, data: [] };
+  }
+}
+
 export async function createTourismSpot(data: {
   name: string;
   slug: string;
@@ -41,6 +54,7 @@ export async function createTourismSpot(data: {
   longitude: string;
 }) {
   try {
+    await requireAdmin();
     await db.insert(tourism).values({
       name: data.name,
       slug: data.slug,
@@ -70,6 +84,7 @@ export async function updateTourismSpot(id: string, data: {
   longitude?: string;
 }) {
   try {
+    await requireAdmin();
     await db.update(tourism).set(data as any).where(eq(tourism.id, id));
     revalidatePath("/tourism");
     revalidatePath(`/tourism/${id}`);
@@ -83,6 +98,7 @@ export async function updateTourismSpot(id: string, data: {
 
 export async function deleteTourismSpot(id: string) {
   try {
+    await requireAdmin();
     await db.delete(tourism).where(eq(tourism.id, id));
     revalidatePath("/tourism");
     revalidatePath("/admin/tourism");

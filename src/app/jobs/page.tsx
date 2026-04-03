@@ -2,11 +2,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, DollarSign, Clock } from "lucide-react";
 import Link from "next/link";
-import { getJobs } from "@/actions/jobs";
+import { getActiveJobs } from "@/actions/jobs";
+import { FilterBar } from "@/components/ui/filter-bar";
 
-export default async function JobsPage() {
-  const response = await getJobs();
-  const jobs = response.success ? response.data || [] : [];
+const jobFilters = [
+  { label: "ทั้งหมด", value: "" },
+  { label: "เต็มเวลา", value: "full-time" },
+  { label: "พาร์ทไทม์", value: "part-time" },
+  { label: "สัญญาจ้าง", value: "contract" },
+];
+
+export default async function JobsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
+  const response = await getActiveJobs();
+  const allJobs = response.success ? response.data || [] : [];
+  const jobs = category ? allJobs.filter((j) => j.employmentType === category) : allJobs;
 
   const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -35,12 +45,7 @@ export default async function JobsPage() {
         </p>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-4">
-        <Button variant="outline">ทั้งหมด</Button>
-        <Button variant="outline">เต็มเวลา</Button>
-        <Button variant="outline">พาร์ทไทม์</Button>
-        <Button variant="outline">สัญญาจ้าง</Button>
-      </div>
+      <FilterBar filters={jobFilters} />
 
       {jobs.length > 0 ? (
         <div className="space-y-4">

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { boardPosts, boardComments } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin, requireAuth } from "@/lib/auth-check";
 
 export async function getBoardPosts() {
   try {
@@ -46,6 +47,7 @@ export async function createBoardPost(data: {
   authorId: string;
 }) {
   try {
+    await requireAuth();
     await db.insert(boardPosts).values({
       title: data.title,
       slug: data.slug,
@@ -67,6 +69,7 @@ export async function createComment(data: {
   userId: string;
 }) {
   try {
+    await requireAuth();
     await db.insert(boardComments).values({
       postId: data.postId,
       content: data.content,
@@ -88,6 +91,7 @@ export async function updateBoardPost(id: string, data: {
   locked?: boolean;
 }) {
   try {
+    await requireAdmin();
     await db.update(boardPosts).set(data).where(eq(boardPosts.id, id));
     revalidatePath("/board");
     revalidatePath(`/board/${id}`);
@@ -100,6 +104,7 @@ export async function updateBoardPost(id: string, data: {
 
 export async function deleteBoardPost(id: string) {
   try {
+    await requireAdmin();
     await db.delete(boardPosts).where(eq(boardPosts.id, id));
     revalidatePath("/board");
     return { success: true, message: "ลบโพสต์สำเร็จ" };
@@ -111,6 +116,7 @@ export async function deleteBoardPost(id: string) {
 
 export async function deleteComment(id: string, postId: string) {
   try {
+    await requireAdmin();
     await db.delete(boardComments).where(eq(boardComments.id, id));
     revalidatePath(`/board/${postId}`);
     return { success: true, message: "ลบความคิดเห็นสำเร็จ" };

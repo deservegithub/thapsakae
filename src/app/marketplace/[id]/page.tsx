@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft, MessageCircle, Phone, Share2 } from "lucide-react";
+import { MapPin, ArrowLeft, MessageCircle, Phone } from "lucide-react";
+import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
-import { getMarketplaceItemById } from "@/actions/marketplace";
+import { getMarketplaceItemById, getRelatedMarketplaceItems } from "@/actions/marketplace";
 import { notFound } from "next/navigation";
 
 export default async function MarketplaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,8 @@ export default async function MarketplaceDetailPage({ params }: { params: Promis
   }
 
   const item = response.data;
+  const relatedRes = await getRelatedMarketplaceItems(id, item.category);
+  const relatedItems = relatedRes.success ? relatedRes.data || [] : [];
 
   const getConditionLabel = (condition: string) => {
     const labels: Record<string, string> = {
@@ -132,10 +135,7 @@ export default async function MarketplaceDetailPage({ params }: { params: Promis
                         <MessageCircle className="h-5 w-5 mr-2" />
                         ติดต่อผู้ขาย
                       </Button>
-                      <Button variant="outline" className="w-full" size="lg">
-                        <Share2 className="h-5 w-5 mr-2" />
-                        แชร์สินค้านี้
-                      </Button>
+                      <ShareButton title={item.title} text={`สินค้า ฿${parseFloat(item.price).toLocaleString()}`} size="lg" className="w-full" />
                     </div>
                   )}
 
@@ -151,39 +151,26 @@ export default async function MarketplaceDetailPage({ params }: { params: Promis
             </div>
           </div>
 
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">สินค้าที่เกี่ยวข้อง</h2>
-            <div className="grid md:grid-cols-4 gap-4">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-square bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สินค้าที่เกี่ยวข้อง 1</h3>
-                  <p className="text-primary font-bold">฿1,000</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-square bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สินค้าที่เกี่ยวข้อง 2</h3>
-                  <p className="text-primary font-bold">฿2,500</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-square bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สินค้าที่เกี่ยวข้อง 3</h3>
-                  <p className="text-primary font-bold">฿3,200</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-square bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สินค้าที่เกี่ยวข้อง 4</h3>
-                  <p className="text-primary font-bold">฿1,800</p>
-                </CardContent>
-              </Card>
+          {relatedItems.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">สินค้าที่เกี่ยวข้อง</h2>
+              <div className="grid md:grid-cols-4 gap-4">
+                {relatedItems.map((ri) => (
+                  <Link key={ri.id} href={`/marketplace/${ri.id}`}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="aspect-square bg-slate-200 rounded mb-3 overflow-hidden">
+                          {ri.images && ri.images.length > 0 && <img src={ri.images[0]} alt={ri.title} className="w-full h-full object-cover" />}
+                        </div>
+                        <h3 className="font-semibold line-clamp-2 mb-2">{ri.title}</h3>
+                        <p className="text-primary font-bold">฿{parseFloat(ri.price).toLocaleString()}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

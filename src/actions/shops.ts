@@ -2,8 +2,9 @@
 
 import { db } from "@/lib/db";
 import { shops } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-check";
 
 export async function getShops() {
   try {
@@ -11,6 +12,16 @@ export async function getShops() {
     return { success: true, data: result };
   } catch (error) {
     console.error("Error fetching shops:", error);
+    return { success: false, error: "ไม่สามารถดึงข้อมูลร้านค้าได้" };
+  }
+}
+
+export async function getApprovedShops() {
+  try {
+    const result = await db.select().from(shops).where(eq(shops.approved, true)).orderBy(desc(shops.createdAt));
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error fetching approved shops:", error);
     return { success: false, error: "ไม่สามารถดึงข้อมูลร้านค้าได้" };
   }
 }
@@ -28,6 +39,18 @@ export async function getShopById(id: string) {
   }
 }
 
+export async function getRelatedShops(id: string, category: string, limit = 3) {
+  try {
+    const result = await db.select().from(shops)
+      .where(and(eq(shops.category, category as any), ne(shops.id, id), eq(shops.approved, true)))
+      .orderBy(desc(shops.createdAt))
+      .limit(limit);
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: true, data: [] };
+  }
+}
+
 export async function createShop(data: {
   name: string;
   slug: string;
@@ -40,6 +63,7 @@ export async function createShop(data: {
   ownerId: string;
 }) {
   try {
+    await requireAdmin();
     await db.insert(shops).values({
       name: data.name,
       slug: data.slug,
@@ -62,6 +86,7 @@ export async function createShop(data: {
 
 export async function updateShop(id: string, data: Partial<typeof shops.$inferInsert>) {
   try {
+    await requireAdmin();
     await db.update(shops).set(data).where(eq(shops.id, id));
     revalidatePath("/shops");
     revalidatePath(`/shops/${id}`);
@@ -75,6 +100,7 @@ export async function updateShop(id: string, data: Partial<typeof shops.$inferIn
 
 export async function deleteShop(id: string) {
   try {
+    await requireAdmin();
     await db.delete(shops).where(eq(shops.id, id));
     revalidatePath("/shops");
     revalidatePath("/admin/shops");

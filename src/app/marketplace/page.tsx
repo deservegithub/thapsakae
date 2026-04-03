@@ -3,10 +3,22 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { getMarketplaceItems } from "@/actions/marketplace";
+import { FilterBar } from "@/components/ui/filter-bar";
 
-export default async function MarketplacePage() {
+const marketFilters = [
+  { label: "ทั้งหมด", value: "" },
+  { label: "อาหาร", value: "อาหาร" },
+  { label: "เฟอร์นิเจอร์", value: "เฟอร์นิเจอร์" },
+  { label: "อิเล็กทรอนิกส์", value: "อิเล็กทรอนิกส์" },
+  { label: "กีฬา", value: "กีฬา" },
+  { label: "อื่นๆ", value: "อื่นๆ" },
+];
+
+export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
   const response = await getMarketplaceItems();
-  const items = response.success ? response.data : [];
+  const allItems = response.success ? response.data || [] : [];
+  const items = category ? allItems.filter((i) => i.category === category) : allItems;
 
   const getConditionLabel = (condition: string) => {
     const labels: Record<string, string> = {
@@ -35,20 +47,15 @@ export default async function MarketplacePage() {
             ซื้อขายสินค้าในชุมชนตำบลทับสะแก
           </p>
         </div>
-        <Button size="lg">
-          <ShoppingCart className="mr-2 h-5 w-5" />
-          ลงประกาศขาย
-        </Button>
+        <Link href="/marketplace">
+          <Button size="lg">
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            ลงประกาศขาย
+          </Button>
+        </Link>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-4">
-        <Button variant="outline">ทั้งหมด</Button>
-        <Button variant="outline">อาหาร</Button>
-        <Button variant="outline">เฟอร์นิเจอร์</Button>
-        <Button variant="outline">อิเล็กทรอนิกส์</Button>
-        <Button variant="outline">กีฬา</Button>
-        <Button variant="outline">อื่นๆ</Button>
-      </div>
+      <FilterBar filters={marketFilters} />
 
       {items && items.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,11 +117,6 @@ export default async function MarketplacePage() {
         </div>
       )}
 
-      <div className="mt-12 text-center">
-        <Button variant="outline" size="lg">
-          โหลดสินค้าเพิ่มเติม
-        </Button>
-      </div>
     </div>
   );
 }

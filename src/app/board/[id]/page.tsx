@@ -123,8 +123,8 @@ export default function BoardDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </CardHeader>
             <CardContent>
-              <div className="prose max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div className="prose max-w-none whitespace-pre-wrap">
+                {post.content}
               </div>
             </CardContent>
           </Card>
@@ -162,26 +162,40 @@ export default function BoardDetailPage({ params }: { params: Promise<{ id: stri
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>แสดงความคิดเห็น</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmitComment} className="space-y-4">
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="เขียนความคิดเห็นของคุณ..."
-                  rows={4}
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  disabled={submitting}
-                />
-                <Button type="submit" disabled={submitting || !newComment.trim()}>
-                  {submitting ? "กำลังส่ง..." : "ส่งความคิดเห็น"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          {post.locked ? (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <p className="text-muted-foreground">กระทู้นี้ถูกล็อก ไม่สามารถแสดงความคิดเห็นได้</p>
+              </CardContent>
+            </Card>
+          ) : session?.user ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>แสดงความคิดเห็น</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmitComment} className="space-y-4">
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="เขียนความคิดเห็นของคุณ..."
+                    rows={4}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={submitting}
+                  />
+                  <Button type="submit" disabled={submitting || !newComment.trim()}>
+                    {submitting ? "กำลังส่ง..." : "ส่งความคิดเห็น"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <p className="text-muted-foreground">กรุณา<Link href="/login" className="text-primary hover:underline">เข้าสู่ระบบ</Link>เพื่อแสดงความคิดเห็น</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

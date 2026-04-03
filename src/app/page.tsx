@@ -8,29 +8,45 @@ import {
   Calendar, Eye, MapPin, Phone, Clock, Briefcase, DollarSign,
   MessageSquare, User, ShoppingCart, Newspaper, Store, Map, Tag
 } from "lucide-react";
-import { getNews } from "@/actions/news";
-import { getShops } from "@/actions/shops";
+import { getPublishedNews } from "@/actions/news";
+import { getApprovedShops } from "@/actions/shops";
 import { getTourismSpots } from "@/actions/tourism";
-import { getJobs } from "@/actions/jobs";
+import { getActiveJobs } from "@/actions/jobs";
 import { getBoardPosts } from "@/actions/board";
 import { getMarketplaceItems } from "@/actions/marketplace";
 
 export default async function Home() {
   const [newsRes, shopsRes, tourismRes, jobsRes, boardRes, marketRes] = await Promise.all([
-    getNews(),
-    getShops(),
+    getPublishedNews(),
+    getApprovedShops(),
     getTourismSpots(),
-    getJobs(),
+    getActiveJobs(),
     getBoardPosts(),
     getMarketplaceItems(),
   ]);
 
-  const newsList = (newsRes.success ? newsRes.data || [] : []).slice(0, 3);
-  const shopsList = (shopsRes.success ? shopsRes.data || [] : []).slice(0, 3);
-  const tourismList = (tourismRes.success ? tourismRes.data || [] : []).slice(0, 3);
-  const jobsList = (jobsRes.success ? jobsRes.data || [] : []).slice(0, 3);
-  const boardList = (boardRes.success ? boardRes.data || [] : []).slice(0, 3);
-  const marketList = (marketRes.success ? marketRes.data || [] : []).slice(0, 3);
+  const allNews = newsRes.success ? newsRes.data || [] : [];
+  const allShops = shopsRes.success ? shopsRes.data || [] : [];
+  const allTourism = tourismRes.success ? tourismRes.data || [] : [];
+  const allJobs = jobsRes.success ? jobsRes.data || [] : [];
+  const allBoard = boardRes.success ? boardRes.data || [] : [];
+  const allMarket = marketRes.success ? marketRes.data || [] : [];
+
+  const newsList = allNews.slice(0, 3);
+  const shopsList = allShops.slice(0, 3);
+  const tourismList = allTourism.slice(0, 3);
+  const jobsList = allJobs.slice(0, 3);
+  const boardList = allBoard.slice(0, 3);
+  const marketList = allMarket.slice(0, 3);
+
+  const categoryCounts = {
+    news: allNews.length,
+    shops: allShops.length,
+    tourism: allTourism.length,
+    jobs: allJobs.length,
+    board: allBoard.length,
+    marketplace: allMarket.length,
+  };
 
   const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = { "full-time": "เต็มเวลา", "part-time": "พาร์ทไทม์", contract: "สัญญาจ้าง" };
@@ -43,7 +59,7 @@ export default async function Home() {
         <HeroBanner newsSlides={newsList.filter(n => n.coverImage).map(n => ({ id: n.id, title: n.title, coverImage: n.coverImage, category: n.category }))} />
       </div>
       <div className="container py-6">
-        <CategorySection />
+        <CategorySection counts={categoryCounts} />
       </div>
 
       {/* แบนเนอร์ 1 */}

@@ -2,11 +2,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, Star } from "lucide-react";
 import Link from "next/link";
-import { getShops } from "@/actions/shops";
+import { getApprovedShops } from "@/actions/shops";
+import { FilterBar } from "@/components/ui/filter-bar";
 
-export default async function ShopsPage() {
-  const response = await getShops();
-  const shops = response.success ? response.data : [];
+const shopFilters = [
+  { label: "ทั้งหมด", value: "" },
+  { label: "ร้านอาหาร", value: "restaurant" },
+  { label: "ร้านค้า", value: "retail" },
+  { label: "บริการ", value: "service" },
+];
+
+export default async function ShopsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
+  const response = await getApprovedShops();
+  const allShops = response.success ? response.data || [] : [];
+  const shops = category ? allShops.filter((s) => s.category === category) : allShops;
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -35,12 +45,7 @@ export default async function ShopsPage() {
         </p>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-4">
-        <Button variant="outline">ทั้งหมด</Button>
-        <Button variant="outline">ร้านอาหาร</Button>
-        <Button variant="outline">ร้านค้า</Button>
-        <Button variant="outline">บริการ</Button>
-      </div>
+      <FilterBar filters={shopFilters} />
 
       {shops && shops.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -99,11 +104,6 @@ export default async function ShopsPage() {
         </div>
       )}
 
-      <div className="mt-12 text-center">
-        <Button variant="outline" size="lg">
-          โหลดร้านค้าเพิ่มเติม
-        </Button>
-      </div>
     </div>
   );
 }

@@ -2,8 +2,9 @@
 
 import { db } from "@/lib/db";
 import { marketplaceItems } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin, requireAuth } from "@/lib/auth-check";
 
 export async function getMarketplaceItems() {
   try {
@@ -28,6 +29,18 @@ export async function getMarketplaceItemById(id: string) {
   }
 }
 
+export async function getRelatedMarketplaceItems(id: string, category: string, limit = 4) {
+  try {
+    const result = await db.select().from(marketplaceItems)
+      .where(and(eq(marketplaceItems.category, category), ne(marketplaceItems.id, id), eq(marketplaceItems.status, "available")))
+      .orderBy(desc(marketplaceItems.createdAt))
+      .limit(limit);
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: true, data: [] };
+  }
+}
+
 export async function createMarketplaceItem(data: {
   title: string;
   slug: string;
@@ -40,6 +53,7 @@ export async function createMarketplaceItem(data: {
   sellerId: string;
 }) {
   try {
+    await requireAuth();
     await db.insert(marketplaceItems).values({
       title: data.title,
       slug: data.slug,
@@ -71,6 +85,7 @@ export async function updateMarketplaceItem(id: string, data: {
   status?: "available" | "sold" | "reserved";
 }) {
   try {
+    await requireAdmin();
     await db.update(marketplaceItems).set(data).where(eq(marketplaceItems.id, id));
     revalidatePath("/marketplace");
     revalidatePath(`/marketplace/${id}`);
@@ -83,6 +98,7 @@ export async function updateMarketplaceItem(id: string, data: {
 
 export async function deleteMarketplaceItem(id: string) {
   try {
+    await requireAdmin();
     await db.delete(marketplaceItems).where(eq(marketplaceItems.id, id));
     revalidatePath("/marketplace");
     return { success: true, message: "ลบประกาศขายสำเร็จ" };

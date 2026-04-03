@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, MapPin, DollarSign, Clock, Mail, Phone, ArrowLeft, Share2, Calendar } from "lucide-react";
+import { Briefcase, MapPin, DollarSign, Clock, Mail, Phone, ArrowLeft, Calendar } from "lucide-react";
+import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getJobById } from "@/actions/jobs";
 import { notFound } from "next/navigation";
@@ -124,10 +125,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     day: 'numeric'
                   })}</span>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  แชร์ประกาศนี้
-                </Button>
+                <ShareButton title={job.title} text={`${job.company} - ${job.location}`} />
               </div>
             </CardContent>
           </Card>

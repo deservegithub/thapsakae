@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, Globe, Facebook, ArrowLeft, Star } from "lucide-react";
+import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
-import { getShopById } from "@/actions/shops";
+import { getShopById, getRelatedShops } from "@/actions/shops";
 import { notFound } from "next/navigation";
 
 export default async function ShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,8 @@ export default async function ShopDetailPage({ params }: { params: Promise<{ id:
   }
 
   const shop = response.data;
+  const relatedRes = await getRelatedShops(id, shop.category);
+  const relatedShops = relatedRes.success ? relatedRes.data || [] : [];
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -132,40 +135,35 @@ export default async function ShopDetailPage({ params }: { params: Promise<{ id:
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t">
+              <div className="mt-6 pt-6 border-t flex items-center justify-between">
                 <div className="text-sm text-muted-foreground">
                   อัปเดตล่าสุด: {new Date(shop.updatedAt).toLocaleDateString('th-TH')}
                 </div>
+                <ShareButton title={shop.name} text={shop.description} />
               </div>
             </CardContent>
           </Card>
 
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">ร้านค้าที่เกี่ยวข้อง</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">ร้านค้าที่เกี่ยวข้อง 1</h3>
-                  <p className="text-xs text-muted-foreground">ร้านอาหาร</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">ร้านค้าที่เกี่ยวข้อง 2</h3>
-                  <p className="text-xs text-muted-foreground">ร้านค้า</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">ร้านค้าที่เกี่ยวข้อง 3</h3>
-                  <p className="text-xs text-muted-foreground">บริการ</p>
-                </CardContent>
-              </Card>
+          {relatedShops.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">ร้านค้าที่เกี่ยวข้อง</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                {relatedShops.map((s) => (
+                  <Link key={s.id} href={`/shops/${s.id}`}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="aspect-video bg-slate-200 rounded mb-3 overflow-hidden">
+                          {s.images && s.images.length > 0 && <img src={s.images[0]} alt={s.name} className="w-full h-full object-cover" />}
+                        </div>
+                        <h3 className="font-semibold line-clamp-2 mb-2">{s.name}</h3>
+                        <p className="text-xs text-muted-foreground">{s.address}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

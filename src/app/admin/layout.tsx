@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   LogOut 
 } from "lucide-react";
+import { AdminMobileNav } from "@/components/admin/mobile-nav";
 
 export default async function AdminLayout({
   children,
@@ -41,8 +42,8 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white border-r min-h-screen fixed left-0 top-0">
+        {/* Sidebar - hidden on mobile */}
+        <aside className="hidden md:block w-64 bg-white border-r min-h-screen fixed left-0 top-0">
           <div className="p-6 border-b">
             <h1 className="text-xl font-bold text-primary">Admin Panel</h1>
             <p className="text-sm text-muted-foreground mt-1">ตำบลทับสะแก</p>
@@ -76,9 +77,12 @@ export default async function AdminLayout({
           </div>
         </aside>
 
+        {/* Mobile Nav */}
+        <AdminMobileNav userName={session.user.name || ""} />
+
         {/* Main Content */}
-        <main className="flex-1 ml-64">
-          <div className="p-8">
+        <main className="flex-1 md:ml-64">
+          <div className="p-4 pt-16 md:pt-8 md:p-8">
             {children}
           </div>
         </main>

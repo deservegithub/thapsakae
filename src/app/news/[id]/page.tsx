@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Eye, User, ArrowLeft, Share2 } from "lucide-react";
+import { Calendar, Eye, User, ArrowLeft } from "lucide-react";
+import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
-import { getNewsById } from "@/actions/news";
+import { getNewsById, getRelatedNews } from "@/actions/news";
 import { notFound } from "next/navigation";
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
   }
 
   const news = response.data;
+  const relatedRes = await getRelatedNews(id, news.category);
+  const relatedNews = relatedRes.success ? relatedRes.data || [] : [];
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -72,8 +75,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                 </div>
               )}
 
-              <div className="prose prose-lg max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: news.content }} />
+              <div className="prose prose-lg max-w-none whitespace-pre-wrap">
+                {news.content}
               </div>
 
               <div className="mt-8 pt-8 border-t">
@@ -81,41 +84,32 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                   <div className="text-sm text-muted-foreground">
                     อัปเดตล่าสุด: {new Date(news.updatedAt).toLocaleDateString('th-TH')}
                   </div>
-                  <Button variant="outline" size="sm">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    แชร์ข่าวนี้
-                  </Button>
+                  <ShareButton title={news.title} text={news.excerpt || ""} />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">ข่าวที่เกี่ยวข้อง</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">ข่าวที่เกี่ยวข้อง 1</h3>
-                  <p className="text-xs text-muted-foreground">23 มี.ค. 2567</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">ข่าวที่เกี่ยวข้อง 2</h3>
-                  <p className="text-xs text-muted-foreground">22 มี.ค. 2567</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-slate-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">ข่าวที่เกี่ยวข้อง 3</h3>
-                  <p className="text-xs text-muted-foreground">21 มี.ค. 2567</p>
-                </CardContent>
-              </Card>
+          {relatedNews.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">ข่าวที่เกี่ยวข้อง</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                {relatedNews.map((item) => (
+                  <Link key={item.id} href={`/news/${item.id}`}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="aspect-video bg-slate-200 rounded mb-3 overflow-hidden">
+                          {item.coverImage && <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover" />}
+                        </div>
+                        <h3 className="font-semibold line-clamp-2 mb-2">{item.title}</h3>
+                        <p className="text-xs text-muted-foreground">{new Date(item.createdAt).toLocaleDateString('th-TH')}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

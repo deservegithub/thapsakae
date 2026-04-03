@@ -2,8 +2,9 @@
 
 import { db } from "@/lib/db";
 import { news } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-check";
 
 export async function getNews() {
   try {
@@ -11,6 +12,16 @@ export async function getNews() {
     return { success: true, data: result };
   } catch (error) {
     console.error("Error fetching news:", error);
+    return { success: false, error: "ไม่สามารถดึงข้อมูลข่าวได้" };
+  }
+}
+
+export async function getPublishedNews() {
+  try {
+    const result = await db.select().from(news).where(eq(news.published, true)).orderBy(desc(news.createdAt));
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error fetching published news:", error);
     return { success: false, error: "ไม่สามารถดึงข้อมูลข่าวได้" };
   }
 }
@@ -28,6 +39,18 @@ export async function getNewsById(id: string) {
   }
 }
 
+export async function getRelatedNews(id: string, category: string, limit = 3) {
+  try {
+    const result = await db.select().from(news)
+      .where(and(eq(news.category, category), ne(news.id, id), eq(news.published, true)))
+      .orderBy(desc(news.createdAt))
+      .limit(limit);
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: true, data: [] };
+  }
+}
+
 export async function createNews(data: {
   title: string;
   slug: string;
@@ -38,6 +61,7 @@ export async function createNews(data: {
   authorId: string;
 }) {
   try {
+    await requireAdmin();
     await db.insert(news).values({
       title: data.title,
       slug: data.slug,
@@ -65,6 +89,7 @@ export async function updateNews(id: string, data: {
   published?: boolean;
 }) {
   try {
+    await requireAdmin();
     await db.update(news).set(data).where(eq(news.id, id));
     revalidatePath("/news");
     revalidatePath(`/news/${id}`);
@@ -78,6 +103,7 @@ export async function updateNews(id: string, data: {
 
 export async function deleteNews(id: string) {
   try {
+    await requireAdmin();
     await db.delete(news).where(eq(news.id, id));
     revalidatePath("/news");
     revalidatePath("/admin/news");

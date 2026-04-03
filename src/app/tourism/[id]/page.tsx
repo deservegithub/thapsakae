@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft, Share2, Star } from "lucide-react";
+import { MapPin, ArrowLeft, Star } from "lucide-react";
+import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
-import { getTourismSpotById } from "@/actions/tourism";
+import { getTourismSpotById, getRelatedTourismSpots } from "@/actions/tourism";
 import { notFound } from "next/navigation";
 
 export default async function TourismDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,8 @@ export default async function TourismDetailPage({ params }: { params: Promise<{ 
   }
 
   const spot = response.data;
+  const relatedRes = await getRelatedTourismSpots(id, spot.category);
+  const relatedSpots = relatedRes.success ? relatedRes.data || [] : [];
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -93,14 +96,29 @@ export default async function TourismDetailPage({ params }: { params: Promise<{ 
                 <Card className="bg-slate-50">
                   <CardContent className="p-6">
                     <h3 className="font-semibold text-lg mb-4">แผนที่</h3>
-                    <div className="aspect-square bg-slate-200 rounded-lg flex items-center justify-center">
-                      <p className="text-muted-foreground">Google Maps</p>
-                    </div>
-                    <div className="mt-4">
-                      <Button variant="outline" className="w-full">
-                        เปิดใน Google Maps
-                      </Button>
-                    </div>
+                    {spot.latitude && spot.longitude ? (
+                      <>
+                        <div className="aspect-square overflow-hidden rounded-lg">
+                          <iframe
+                            src={`https://maps.google.com/maps?q=${spot.latitude},${spot.longitude}&z=15&output=embed`}
+                            className="w-full h-full border-0"
+                            allowFullScreen
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="mt-4">
+                          <a href={`https://www.google.com/maps?q=${spot.latitude},${spot.longitude}`} target="_blank" rel="noopener noreferrer">
+                            <Button variant="outline" className="w-full">
+                              เปิดใน Google Maps
+                            </Button>
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="aspect-square bg-slate-200 rounded-lg flex items-center justify-center">
+                        <p className="text-muted-foreground">ไม่มีข้อมูลพิกัด</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -118,40 +136,31 @@ export default async function TourismDetailPage({ params }: { params: Promise<{ 
                 <div className="text-sm text-muted-foreground">
                   อัปเดตล่าสุด: {new Date(spot.updatedAt).toLocaleDateString('th-TH')}
                 </div>
-                <Button variant="outline">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  แชร์สถานที่นี้
-                </Button>
+                <ShareButton title={spot.name} text={spot.description} />
               </div>
             </CardContent>
           </Card>
 
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">สถานที่ท่องเที่ยวที่เกี่ยวข้อง</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-gradient-to-br from-sky-200 to-teal-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สถานที่ท่องเที่ยวที่เกี่ยวข้อง 1</h3>
-                  <p className="text-xs text-muted-foreground">ธรรมชาติ</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-gradient-to-br from-sky-200 to-teal-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สถานที่ท่องเที่ยวที่เกี่ยวข้อง 2</h3>
-                  <p className="text-xs text-muted-foreground">วัด</p>
-                </CardContent>
-              </Card>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-gradient-to-br from-sky-200 to-teal-200 rounded mb-3"></div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">สถานที่ท่องเที่ยวที่เกี่ยวข้อง 3</h3>
-                  <p className="text-xs text-muted-foreground">วัฒนธรรม</p>
-                </CardContent>
-              </Card>
+          {relatedSpots.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">สถานที่ท่องเที่ยวที่เกี่ยวข้อง</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                {relatedSpots.map((s) => (
+                  <Link key={s.id} href={`/tourism/${s.id}`}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="aspect-video bg-gradient-to-br from-sky-200 to-teal-200 rounded mb-3 overflow-hidden">
+                          {s.images && s.images.length > 0 && <img src={s.images[0]} alt={s.name} className="w-full h-full object-cover" />}
+                        </div>
+                        <h3 className="font-semibold line-clamp-2 mb-2">{s.name}</h3>
+                        <p className="text-xs text-muted-foreground">{getCategoryLabel(s.category)}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

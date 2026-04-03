@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { jobs } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-check";
 
 export async function getJobs() {
   try {
@@ -11,6 +12,16 @@ export async function getJobs() {
     return { success: true, data: result };
   } catch (error) {
     console.error("Error fetching jobs:", error);
+    return { success: false, error: "ไม่สามารถดึงข้อมูลงานได้" };
+  }
+}
+
+export async function getActiveJobs() {
+  try {
+    const result = await db.select().from(jobs).where(eq(jobs.active, true)).orderBy(desc(jobs.createdAt));
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error fetching active jobs:", error);
     return { success: false, error: "ไม่สามารถดึงข้อมูลงานได้" };
   }
 }
@@ -42,6 +53,7 @@ export async function createJob(data: {
   posterId: string;
 }) {
   try {
+    await requireAdmin();
     await db.insert(jobs).values({
       title: data.title,
       slug: data.slug,
@@ -68,7 +80,6 @@ export async function updateJob(id: string, data: {
   title?: string;
   company?: string;
   description?: string;
-  requirements?: string;
   salary?: string;
   location?: string;
   employmentType?: "full-time" | "part-time" | "contract";
@@ -77,6 +88,7 @@ export async function updateJob(id: string, data: {
   active?: boolean;
 }) {
   try {
+    await requireAdmin();
     await db.update(jobs).set(data).where(eq(jobs.id, id));
     revalidatePath("/jobs");
     revalidatePath(`/jobs/${id}`);
@@ -90,6 +102,7 @@ export async function updateJob(id: string, data: {
 
 export async function deleteJob(id: string) {
   try {
+    await requireAdmin();
     await db.delete(jobs).where(eq(jobs.id, id));
     revalidatePath("/jobs");
     revalidatePath("/admin/jobs");

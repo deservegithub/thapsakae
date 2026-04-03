@@ -3,10 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Star, Users } from "lucide-react";
 import Link from "next/link";
 import { getTourismSpots } from "@/actions/tourism";
+import { FilterBar } from "@/components/ui/filter-bar";
 
-export default async function TourismPage() {
+const tourismFilters = [
+  { label: "ทั้งหมด", value: "" },
+  { label: "ธรรมชาติ", value: "nature" },
+  { label: "วัด", value: "temple" },
+  { label: "วัฒนธรรม", value: "culture" },
+  { label: "อื่นๆ", value: "other" },
+];
+
+export default async function TourismPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
   const response = await getTourismSpots();
-  const attractions = response.success ? response.data : [];
+  const allAttractions = response.success ? response.data || [] : [];
+  const attractions = category ? allAttractions.filter((a) => a.category === category) : allAttractions;
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -37,12 +48,7 @@ export default async function TourismPage() {
         </p>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-4">
-        <Button variant="outline">ทั้งหมด</Button>
-        <Button variant="outline">ธรรมชาติ</Button>
-        <Button variant="outline">วัด</Button>
-        <Button variant="outline">วัฒนธรรม</Button>
-      </div>
+      <FilterBar filters={tourismFilters} />
 
       {attractions && attractions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -84,11 +90,6 @@ export default async function TourismPage() {
         </div>
       )}
 
-      <div className="mt-12 text-center">
-        <Button variant="outline" size="lg">
-          โหลดสถานที่เพิ่มเติม
-        </Button>
-      </div>
     </div>
   );
 }

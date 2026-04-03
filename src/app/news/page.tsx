@@ -2,10 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar, Eye } from "lucide-react";
 import Link from "next/link";
-import { getNews } from "@/actions/news";
+import { getPublishedNews } from "@/actions/news";
 
 export default async function NewsPage() {
-  const response = await getNews();
+  const response = await getPublishedNews();
   const newsItems = response.success ? response.data : [];
 
   return (

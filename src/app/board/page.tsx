@@ -3,10 +3,21 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, User, Eye } from "lucide-react";
 import Link from "next/link";
 import { getBoardPosts } from "@/actions/board";
+import { FilterBar } from "@/components/ui/filter-bar";
 
-export default async function BoardPage() {
+const boardFilters = [
+  { label: "ทั้งหมด", value: "" },
+  { label: "แนะนำ", value: "แนะนำ" },
+  { label: "ถาม-ตอบ", value: "ถาม-ตอบ" },
+  { label: "กิจกรรม", value: "กิจกรรม" },
+  { label: "ทั่วไป", value: "ทั่วไป" },
+];
+
+export default async function BoardPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
   const response = await getBoardPosts();
-  const posts = response.success ? response.data : [];
+  const allPosts = response.success ? response.data || [] : [];
+  const posts = category ? allPosts.filter((p) => p.category === category) : allPosts;
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -27,19 +38,15 @@ export default async function BoardPage() {
             พูดคุยแลกเปลี่ยนความคิดเห็นกับชาวตำบล
           </p>
         </div>
-        <Button size="lg">
-          <MessageSquare className="mr-2 h-5 w-5" />
-          สร้างกระทู้ใหม่
-        </Button>
+        <Link href="/board">
+          <Button size="lg">
+            <MessageSquare className="mr-2 h-5 w-5" />
+            สร้างกระทู้ใหม่
+          </Button>
+        </Link>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-4">
-        <Button variant="outline">ทั้งหมด</Button>
-        <Button variant="outline">แนะนำ</Button>
-        <Button variant="outline">ถาม-ตอบ</Button>
-        <Button variant="outline">กิจกรรม</Button>
-        <Button variant="outline">ทั่วไป</Button>
-      </div>
+      <FilterBar filters={boardFilters} />
 
       {posts && posts.length > 0 ? (
         <div className="space-y-4">
@@ -93,11 +100,6 @@ export default async function BoardPage() {
         </div>
       )}
 
-      <div className="mt-12 text-center">
-        <Button variant="outline" size="lg">
-          โหลดกระทู้เพิ่มเติม
-        </Button>
-      </div>
     </div>
   );
 }
