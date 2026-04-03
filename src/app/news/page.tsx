@@ -3,10 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Eye } from "lucide-react";
 import Link from "next/link";
 import { getPublishedNews } from "@/actions/news";
+import { FilterBar } from "@/components/ui/filter-bar";
 
-export default async function NewsPage() {
+const newsFilters = [
+  { label: "ทั้งหมด", value: "" },
+  { label: "ทั่วไป", value: "general" },
+  { label: "ประกาศ", value: "announcement" },
+  { label: "กิจกรรม", value: "event" },
+  { label: "เร่งด่วน", value: "emergency" },
+];
+
+export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
   const response = await getPublishedNews();
-  const newsItems = response.success ? response.data : [];
+  const allNews = response.success ? response.data || [] : [];
+  const newsItems = category ? allNews.filter((n) => n.category === category) : allNews;
 
   return (
     <div className="container py-12">
@@ -16,6 +27,8 @@ export default async function NewsPage() {
           ข่าวสารและกิจกรรมของตำบลทับสะแก
         </p>
       </div>
+
+      <FilterBar filters={newsFilters} />
 
       {newsItems && newsItems.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -66,11 +79,6 @@ export default async function NewsPage() {
         </div>
       )}
 
-      <div className="mt-12 text-center">
-        <Button variant="outline" size="lg">
-          โหลดข่าวเพิ่มเติม
-        </Button>
-      </div>
     </div>
   );
 }
