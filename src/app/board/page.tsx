@@ -4,6 +4,9 @@ import { MessageSquare, User, Eye } from "lucide-react";
 import Link from "next/link";
 import { getBoardPosts } from "@/actions/board";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Pagination, paginateData } from "@/components/shared/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const boardFilters = [
   { label: "ทั้งหมด", value: "" },
@@ -13,11 +16,13 @@ const boardFilters = [
   { label: "ทั่วไป", value: "ทั่วไป" },
 ];
 
-export default async function BoardPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function BoardPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
   const response = await getBoardPosts();
   const allPosts = response.success ? response.data || [] : [];
-  const posts = category ? allPosts.filter((p) => p.category === category) : allPosts;
+  const filtered = category ? allPosts.filter((p) => p.category === category) : allPosts;
+  const posts = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -100,6 +105,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
         </div>
       )}
 
+      <Pagination totalItems={filtered.length} itemsPerPage={ITEMS_PER_PAGE} />
     </div>
   );
 }

@@ -4,6 +4,9 @@ import { MapPin, Phone, Clock, Star } from "lucide-react";
 import Link from "next/link";
 import { getApprovedShops } from "@/actions/shops";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Pagination, paginateData } from "@/components/shared/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const shopFilters = [
   { label: "ทั้งหมด", value: "" },
@@ -12,11 +15,13 @@ const shopFilters = [
   { label: "บริการ", value: "service" },
 ];
 
-export default async function ShopsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function ShopsPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
   const response = await getApprovedShops();
   const allShops = response.success ? response.data || [] : [];
-  const shops = category ? allShops.filter((s) => s.category === category) : allShops;
+  const filtered = category ? allShops.filter((s) => s.category === category) : allShops;
+  const shops = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -104,6 +109,7 @@ export default async function ShopsPage({ searchParams }: { searchParams: Promis
         </div>
       )}
 
+      <Pagination totalItems={filtered.length} itemsPerPage={ITEMS_PER_PAGE} />
     </div>
   );
 }

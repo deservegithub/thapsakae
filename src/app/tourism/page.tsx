@@ -4,6 +4,9 @@ import { Star, Users } from "lucide-react";
 import Link from "next/link";
 import { getTourismSpots } from "@/actions/tourism";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Pagination, paginateData } from "@/components/shared/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const tourismFilters = [
   { label: "ทั้งหมด", value: "" },
@@ -13,11 +16,13 @@ const tourismFilters = [
   { label: "อื่นๆ", value: "other" },
 ];
 
-export default async function TourismPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function TourismPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
   const response = await getTourismSpots();
   const allAttractions = response.success ? response.data || [] : [];
-  const attractions = category ? allAttractions.filter((a) => a.category === category) : allAttractions;
+  const filtered = category ? allAttractions.filter((a) => a.category === category) : allAttractions;
+  const attractions = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -90,6 +95,7 @@ export default async function TourismPage({ searchParams }: { searchParams: Prom
         </div>
       )}
 
+      <Pagination totalItems={filtered.length} itemsPerPage={ITEMS_PER_PAGE} />
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Newspaper, Store, Palmtree, Briefcase, MessageSquare, ShoppingCart, Users } from "lucide-react";
+import { Newspaper, Store, Palmtree, Briefcase, MessageSquare, ShoppingCart, Users, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { news, shops, tourism, jobs, boardPosts, marketplaceItems, users } from "@/lib/db/schema";
+import { news, shops, tourism, jobs, boardPosts, marketplaceItems, users, appointments } from "@/lib/db/schema";
 import { count, desc } from "drizzle-orm";
 
 export default async function AdminDashboard() {
-  const [newsCount, shopsCount, tourismCount, jobsCount, boardCount, marketCount, usersCount] = await Promise.all([
+  const [newsCount, shopsCount, tourismCount, jobsCount, boardCount, marketCount, usersCount, appointmentsCount] = await Promise.all([
     db.select({ count: count() }).from(news),
     db.select({ count: count() }).from(shops),
     db.select({ count: count() }).from(tourism),
@@ -14,9 +14,11 @@ export default async function AdminDashboard() {
     db.select({ count: count() }).from(boardPosts),
     db.select({ count: count() }).from(marketplaceItems),
     db.select({ count: count() }).from(users),
+    db.select({ count: count() }).from(appointments),
   ]);
 
   const recentNews = await db.select({ id: news.id, title: news.title, createdAt: news.createdAt }).from(news).orderBy(desc(news.createdAt)).limit(5);
+  const recentAppointments = await db.select().from(appointments).orderBy(desc(appointments.createdAt)).limit(5);
 
   const stats = [
     { title: "ข่าวทั้งหมด", value: newsCount[0].count, icon: Newspaper, color: "text-blue-600", href: "/admin/news" },
@@ -25,6 +27,7 @@ export default async function AdminDashboard() {
     { title: "ประกาศงาน", value: jobsCount[0].count, icon: Briefcase, color: "text-amber-600", href: "/admin/jobs" },
     { title: "กระทู้", value: boardCount[0].count, icon: MessageSquare, color: "text-purple-600", href: "/admin/board" },
     { title: "สินค้าซื้อขาย", value: marketCount[0].count, icon: ShoppingCart, color: "text-rose-600", href: "/admin/marketplace" },
+    { title: "จองคิว", value: appointmentsCount[0].count, icon: CalendarDays, color: "text-cyan-600", href: "/admin/appointments" },
     { title: "ผู้ใช้งาน", value: usersCount[0].count, icon: Users, color: "text-indigo-600", href: "/admin/users" },
   ];
 
@@ -54,7 +57,7 @@ export default async function AdminDashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>ข่าวล่าสุด</CardTitle>
@@ -83,6 +86,44 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader>
+            <CardTitle>การจองคิวล่าสุด</CardTitle>
+            <CardDescription>รายการจองคิวที่เข้ามาล่าสุด</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {recentAppointments.length > 0 ? (
+              <div className="space-y-4">
+                {recentAppointments.map((apt) => (
+                  <div key={apt.id} className="flex items-start gap-4">
+                    <div className={`h-2 w-2 rounded-full mt-2 ${
+                      apt.status === "pending" ? "bg-amber-500" :
+                      apt.status === "confirmed" ? "bg-green-500" :
+                      apt.status === "completed" ? "bg-blue-500" : "bg-red-500"
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{apt.serviceType}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(apt.appointmentDate).toLocaleDateString('th-TH')} เวลา {apt.appointmentTime}
+                      </p>
+                    </div>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      apt.status === "pending" ? "bg-amber-100 text-amber-800" :
+                      apt.status === "confirmed" ? "bg-green-100 text-green-800" :
+                      apt.status === "completed" ? "bg-blue-100 text-blue-800" :
+                      "bg-red-100 text-red-800"
+                    }`}>
+                      {apt.status === "pending" ? "รอ" : apt.status === "confirmed" ? "ยืนยัน" : apt.status === "completed" ? "เสร็จ" : "ยกเลิก"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">ยังไม่มีการจอง</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>การจัดการ</CardTitle>
             <CardDescription>เข้าถึงเมนูจัดการต่างๆ</CardDescription>
           </CardHeader>
@@ -104,13 +145,13 @@ export default async function AdminDashboard() {
                 <Briefcase className="h-6 w-6 text-amber-600 mb-2" />
                 <p className="font-medium text-sm">จัดการงาน</p>
               </Link>
-              <Link href="/admin/board" className="p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                <MessageSquare className="h-6 w-6 text-purple-600 mb-2" />
-                <p className="font-medium text-sm">จัดการบอร์ด</p>
+              <Link href="/admin/appointments" className="p-4 border rounded-lg hover:bg-slate-50 transition-colors">
+                <CalendarDays className="h-6 w-6 text-cyan-600 mb-2" />
+                <p className="font-medium text-sm">จัดการจองคิว</p>
               </Link>
-              <Link href="/admin/marketplace" className="p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                <ShoppingCart className="h-6 w-6 text-rose-600 mb-2" />
-                <p className="font-medium text-sm">จัดการซื้อขาย</p>
+              <Link href="/admin/users" className="p-4 border rounded-lg hover:bg-slate-50 transition-colors">
+                <Users className="h-6 w-6 text-indigo-600 mb-2" />
+                <p className="font-medium text-sm">จัดการผู้ใช้</p>
               </Link>
             </div>
           </CardContent>

@@ -4,6 +4,9 @@ import { Briefcase, MapPin, DollarSign, Clock } from "lucide-react";
 import Link from "next/link";
 import { getActiveJobs } from "@/actions/jobs";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Pagination, paginateData } from "@/components/shared/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const jobFilters = [
   { label: "ทั้งหมด", value: "" },
@@ -12,11 +15,13 @@ const jobFilters = [
   { label: "สัญญาจ้าง", value: "contract" },
 ];
 
-export default async function JobsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function JobsPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
   const response = await getActiveJobs();
   const allJobs = response.success ? response.data || [] : [];
-  const jobs = category ? allJobs.filter((j) => j.employmentType === category) : allJobs;
+  const filtered = category ? allJobs.filter((j) => j.employmentType === category) : allJobs;
+  const jobs = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -96,6 +101,8 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
           <p className="text-muted-foreground">ยังไม่มีประกาศงานในระบบ</p>
         </div>
       )}
+
+      <Pagination totalItems={filtered.length} itemsPerPage={ITEMS_PER_PAGE} />
     </div>
   );
 }

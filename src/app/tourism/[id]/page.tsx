@@ -4,6 +4,7 @@ import { MapPin, ArrowLeft, Star } from "lucide-react";
 import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getTourismSpotById, getRelatedTourismSpots } from "@/actions/tourism";
+import { ReviewSection } from "@/components/tourism/ReviewSection";
 import { notFound } from "next/navigation";
 
 export default async function TourismDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -124,12 +125,7 @@ export default async function TourismDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="border-t pt-6">
-                <h3 className="font-semibold text-lg mb-4">รีวิวและคะแนน</h3>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                  <p className="text-muted-foreground">ยังไม่มีรีวิว</p>
-                  <p className="text-sm text-muted-foreground mt-2">เป็นคนแรกที่รีวิวสถานที่นี้</p>
-                  <Button className="mt-4">เขียนรีวิว</Button>
-                </div>
+                <ReviewSection tourismId={spot.id} />
               </div>
 
               <div className="mt-6 pt-6 border-t flex items-center justify-between">

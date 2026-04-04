@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, User, LogOut, Shield } from "lucide-react";
+import { Menu, X, User, LogOut, Shield, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 
@@ -41,6 +41,11 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link href="/search">
+            <Button variant="ghost" size="icon" className="hidden sm:flex">
+              <Search className="h-5 w-5" />
+            </Button>
+          </Link>
           {session?.user ? (
             <>
               <NotificationBell />

@@ -4,6 +4,9 @@ import { ShoppingCart, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { getMarketplaceItems } from "@/actions/marketplace";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Pagination, paginateData } from "@/components/shared/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const marketFilters = [
   { label: "ทั้งหมด", value: "" },
@@ -14,11 +17,13 @@ const marketFilters = [
   { label: "อื่นๆ", value: "อื่นๆ" },
 ];
 
-export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
   const response = await getMarketplaceItems();
   const allItems = response.success ? response.data || [] : [];
-  const items = category ? allItems.filter((i) => i.category === category) : allItems;
+  const filtered = category ? allItems.filter((i) => i.category === category) : allItems;
+  const items = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getConditionLabel = (condition: string) => {
     const labels: Record<string, string> = {
@@ -117,6 +122,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         </div>
       )}
 
+      <Pagination totalItems={filtered.length} itemsPerPage={ITEMS_PER_PAGE} />
     </div>
   );
 }

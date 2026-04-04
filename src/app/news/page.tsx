@@ -4,6 +4,7 @@ import { Calendar, Eye } from "lucide-react";
 import Link from "next/link";
 import { getPublishedNews } from "@/actions/news";
 import { FilterBar } from "@/components/ui/filter-bar";
+import { Pagination, paginateData } from "@/components/shared/Pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +16,15 @@ const newsFilters = [
   { label: "เร่งด่วน", value: "emergency" },
 ];
 
-export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const { category } = await searchParams;
+const ITEMS_PER_PAGE = 12;
+
+export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
+  const { category, page } = await searchParams;
+  const currentPage = Number(page) || 1;
   const response = await getPublishedNews();
   const allNews = response.success ? response.data || [] : [];
-  const newsItems = category ? allNews.filter((n) => n.category === category) : allNews;
+  const filtered = category ? allNews.filter((n) => n.category === category) : allNews;
+  const newsItems = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   return (
     <div className="container py-12">
@@ -81,6 +86,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
         </div>
       )}
 
+      <Pagination totalItems={filtered.length} itemsPerPage={ITEMS_PER_PAGE} />
     </div>
   );
 }
