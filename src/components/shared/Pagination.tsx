@@ -75,9 +75,3 @@ export function Pagination({ totalItems, itemsPerPage = 12, paramName = "page" }
     </div>
   );
 }
-
-// Helper to slice data for current page (use in server components)
-export function paginateData<T>(data: T[], page: number, perPage: number = 12): T[] {
-  const start = (page - 1) * perPage;
-  return data.slice(start, start + perPage);
-}

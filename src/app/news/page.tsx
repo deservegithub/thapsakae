@@ -4,7 +4,8 @@ import { Calendar, Eye } from "lucide-react";
 import Link from "next/link";
 import { getPublishedNews } from "@/actions/news";
 import { FilterBar } from "@/components/ui/filter-bar";
-import { Pagination, paginateData } from "@/components/shared/Pagination";
+import { Pagination } from "@/components/shared/Pagination";
+import { paginateData } from "@/lib/utils/paginate";
 
 export const dynamic = "force-dynamic";
 

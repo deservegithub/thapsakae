@@ -4,7 +4,8 @@ import { ShoppingCart, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { getMarketplaceItems } from "@/actions/marketplace";
 import { FilterBar } from "@/components/ui/filter-bar";
-import { Pagination, paginateData } from "@/components/shared/Pagination";
+import { Pagination } from "@/components/shared/Pagination";
+import { paginateData } from "@/lib/utils/paginate";
 
 const ITEMS_PER_PAGE = 12;
 

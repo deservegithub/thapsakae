@@ -4,7 +4,8 @@ import { MapPin, Phone, Clock, Star } from "lucide-react";
 import Link from "next/link";
 import { getApprovedShops } from "@/actions/shops";
 import { FilterBar } from "@/components/ui/filter-bar";
-import { Pagination, paginateData } from "@/components/shared/Pagination";
+import { Pagination } from "@/components/shared/Pagination";
+import { paginateData } from "@/lib/utils/paginate";
 
 const ITEMS_PER_PAGE = 12;
 
