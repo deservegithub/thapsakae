@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowLeft, MessageCircle, Phone } from "lucide-react";
+import { MapPin, ArrowLeft, MessageCircle, Phone, User } from "lucide-react";
 import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getMarketplaceItemById, getRelatedMarketplaceItems } from "@/actions/marketplace";
@@ -140,6 +140,19 @@ export default async function MarketplaceDetailPage({ params }: { params: Promis
                   <div className="border-t pt-6">
                     <h3 className="font-semibold mb-3">ข้อมูลผู้ขาย</h3>
                     <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {item.sellerAvatar ? (
+                            <img src={item.sellerAvatar} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="h-5 w-5 text-primary" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium">{item.sellerName || "ผู้ขาย"}</p>
+                          <p className="text-xs text-muted-foreground">สมาชิก</p>
+                        </div>
+                      </div>
                       <div className="flex items-start gap-3">
                         <MapPin className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
@@ -152,10 +165,12 @@ export default async function MarketplaceDetailPage({ params }: { params: Promis
 
                   {item.status === "available" && (
                     <div className="border-t pt-6 space-y-3">
-                      <Button className="w-full" size="lg">
-                        <MessageCircle className="h-5 w-5 mr-2" />
-                        ติดต่อผู้ขาย
-                      </Button>
+                      <Link href={`/messages?sellerId=${item.sellerId}&itemId=${item.id}`}>
+                        <Button className="w-full" size="lg">
+                          <MessageCircle className="h-5 w-5 mr-2" />
+                          ติดต่อผู้ขาย
+                        </Button>
+                      </Link>
                       <ShareButton title={item.title} text={`สินค้า ฿${parseFloat(item.price).toLocaleString()}`} size="lg" className="w-full" />
                     </div>
                   )}

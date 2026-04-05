@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, MapPin, MessageCircle } from "lucide-react";
+import { ShoppingCart, MapPin, User } from "lucide-react";
 import Link from "next/link";
 import { getMarketplaceItems } from "@/actions/marketplace";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+import { MarketSearchSort } from "@/components/marketplace/MarketSearchSort";
 
 export const metadata: Metadata = {
   title: "ซื้อขายทับสะแก",
@@ -29,12 +30,34 @@ const marketFilters = [
   { label: "อื่นๆ", value: "อื่นๆ" },
 ];
 
-export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
-  const { category, page } = await searchParams;
+export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string; q?: string; sort?: string; maxPrice?: string }> }) {
+  const { category, page, q, sort, maxPrice } = await searchParams;
   const currentPage = Number(page) || 1;
   const response = await getMarketplaceItems();
   const allItems = response.success ? response.data || [] : [];
-  const filtered = category ? allItems.filter((i) => i.category === category) : allItems;
+
+  let filtered = category ? allItems.filter((i) => i.category === category) : allItems;
+
+  if (q?.trim()) {
+    const query = q.trim().toLowerCase();
+    filtered = filtered.filter((i) =>
+      i.title.toLowerCase().includes(query) || i.description.toLowerCase().includes(query)
+    );
+  }
+
+  if (maxPrice) {
+    const max = Number(maxPrice);
+    if (!isNaN(max)) {
+      filtered = filtered.filter((i) => parseFloat(i.price) <= max);
+    }
+  }
+
+  if (sort === "price-asc") {
+    filtered = [...filtered].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+  } else if (sort === "price-desc") {
+    filtered = [...filtered].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+  }
+
   const items = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getConditionLabel = (condition: string) => {
@@ -64,7 +87,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
             ซื้อขายสินค้าในชุมชนตำบลทับสะแก
           </p>
         </div>
-        <Link href="/marketplace">
+        <Link href="/marketplace/create">
           <Button size="lg">
             <ShoppingCart className="mr-2 h-5 w-5" />
             ลงประกาศขาย
@@ -72,6 +95,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         </Link>
       </div>
 
+      <MarketSearchSort />
       <FilterBar filters={marketFilters} />
 
       {items && items.length > 0 ? (
@@ -116,12 +140,9 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
                     <MapPin className="h-4 w-4 flex-shrink-0" />
                     <span className="line-clamp-1">{item.location}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">ผู้ขาย</span>
-                    <Button size="sm" variant="outline">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      แชท
-                    </Button>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <User className="h-4 w-4 flex-shrink-0" />
+                    <span>{item.sellerName || "ผู้ขาย"}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -130,7 +151,11 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">ยังไม่มีสินค้าในระบบ</p>
+          <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground mb-4">{q ? `ไม่พบสินค้าที่ตรงกับ "${q}"` : "ยังไม่มีสินค้าในระบบ"}</p>
+          <Link href="/marketplace/create">
+            <Button>ลงประกาศขายชิ้นแรก</Button>
+          </Link>
         </div>
       )}
 

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, User, Eye } from "lucide-react";
+import { MessageSquare, User, Eye, Search } from "lucide-react";
 import Link from "next/link";
 import { getBoardPosts } from "@/actions/board";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+import { BoardSearchSort } from "@/components/board/BoardSearchSort";
 
 export const metadata: Metadata = {
   title: "เว็บบอร์ดทับสะแก",
@@ -28,12 +29,27 @@ const boardFilters = [
   { label: "ทั่วไป", value: "ทั่วไป" },
 ];
 
-export default async function BoardPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string }> }) {
-  const { category, page } = await searchParams;
+export default async function BoardPage({ searchParams }: { searchParams: Promise<{ category?: string; page?: string; q?: string; sort?: string }> }) {
+  const { category, page, q, sort } = await searchParams;
   const currentPage = Number(page) || 1;
   const response = await getBoardPosts();
   const allPosts = response.success ? response.data || [] : [];
-  const filtered = category ? allPosts.filter((p) => p.category === category) : allPosts;
+
+  let filtered = category ? allPosts.filter((p) => p.category === category) : allPosts;
+
+  if (q?.trim()) {
+    const query = q.trim().toLowerCase();
+    filtered = filtered.filter((p) =>
+      p.title.toLowerCase().includes(query) || p.content.toLowerCase().includes(query)
+    );
+  }
+
+  if (sort === "popular") {
+    filtered = [...filtered].sort((a, b) => b.views - a.views);
+  } else if (sort === "comments") {
+    filtered = [...filtered].sort((a, b) => Number(b.commentCount) - Number(a.commentCount));
+  }
+
   const posts = paginateData(filtered, currentPage, ITEMS_PER_PAGE);
 
   const getCategoryColor = (category: string) => {
@@ -55,7 +71,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
             พูดคุยแลกเปลี่ยนความคิดเห็นกับชาวตำบล
           </p>
         </div>
-        <Link href="/board">
+        <Link href="/board/create">
           <Button size="lg">
             <MessageSquare className="mr-2 h-5 w-5" />
             สร้างกระทู้ใหม่
@@ -63,6 +79,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
         </Link>
       </div>
 
+      <BoardSearchSort />
       <FilterBar filters={boardFilters} />
 
       {posts && posts.length > 0 ? (
@@ -87,7 +104,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
                       <CardDescription className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
                           <User className="h-4 w-4" />
-                          <span>ผู้เขียน</span>
+                          <span>{post.authorName || "ไม่ระบุชื่อ"}</span>
                         </span>
                         <span>•</span>
                         <span>{new Date(post.createdAt).toLocaleDateString('th-TH')}</span>
@@ -103,7 +120,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
                     </div>
                     <div className="flex items-center gap-1">
                       <MessageSquare className="h-4 w-4" />
-                      <span>ความคิดเห็น</span>
+                      <span>{Number(post.commentCount)} ความคิดเห็น</span>
                     </div>
                   </div>
                 </CardContent>
@@ -113,7 +130,11 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">ยังไม่มีกระทู้ในระบบ</p>
+          <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground mb-4">{q ? `ไม่พบกระทู้ที่ตรงกับ "${q}"` : "ยังไม่มีกระทู้ในระบบ"}</p>
+          <Link href="/board/create">
+            <Button>สร้างกระทู้แรก</Button>
+          </Link>
         </div>
       )}
 

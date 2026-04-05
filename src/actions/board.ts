@@ -1,14 +1,33 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { boardPosts, boardComments } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { boardPosts, boardComments, users } from "@/lib/db/schema";
+import { eq, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, requireAuth } from "@/lib/auth-check";
 
 export async function getBoardPosts() {
   try {
-    const result = await db.select().from(boardPosts).orderBy(desc(boardPosts.createdAt));
+    const result = await db
+      .select({
+        id: boardPosts.id,
+        title: boardPosts.title,
+        slug: boardPosts.slug,
+        content: boardPosts.content,
+        category: boardPosts.category,
+        authorId: boardPosts.authorId,
+        views: boardPosts.views,
+        pinned: boardPosts.pinned,
+        locked: boardPosts.locked,
+        createdAt: boardPosts.createdAt,
+        updatedAt: boardPosts.updatedAt,
+        authorName: users.name,
+        authorAvatar: users.avatar,
+        commentCount: sql<number>`(SELECT COUNT(*) FROM board_comments WHERE board_comments.post_id = ${boardPosts.id})`.as("comment_count"),
+      })
+      .from(boardPosts)
+      .leftJoin(users, eq(boardPosts.authorId, users.id))
+      .orderBy(desc(boardPosts.pinned), desc(boardPosts.createdAt));
     return { success: true, data: result };
   } catch (error) {
     console.error("Error fetching board posts:", error);
@@ -18,7 +37,26 @@ export async function getBoardPosts() {
 
 export async function getBoardPostById(id: string) {
   try {
-    const result = await db.select().from(boardPosts).where(eq(boardPosts.id, id)).limit(1);
+    const result = await db
+      .select({
+        id: boardPosts.id,
+        title: boardPosts.title,
+        slug: boardPosts.slug,
+        content: boardPosts.content,
+        category: boardPosts.category,
+        authorId: boardPosts.authorId,
+        views: boardPosts.views,
+        pinned: boardPosts.pinned,
+        locked: boardPosts.locked,
+        createdAt: boardPosts.createdAt,
+        updatedAt: boardPosts.updatedAt,
+        authorName: users.name,
+        authorAvatar: users.avatar,
+      })
+      .from(boardPosts)
+      .leftJoin(users, eq(boardPosts.authorId, users.id))
+      .where(eq(boardPosts.id, id))
+      .limit(1);
     if (result.length === 0) {
       return { success: false, error: "ไม่พบโพสต์ที่ต้องการ" };
     }
@@ -31,7 +69,21 @@ export async function getBoardPostById(id: string) {
 
 export async function getCommentsByPostId(postId: string) {
   try {
-    const result = await db.select().from(boardComments).where(eq(boardComments.postId, postId)).orderBy(boardComments.createdAt);
+    const result = await db
+      .select({
+        id: boardComments.id,
+        postId: boardComments.postId,
+        userId: boardComments.userId,
+        content: boardComments.content,
+        createdAt: boardComments.createdAt,
+        updatedAt: boardComments.updatedAt,
+        userName: users.name,
+        userAvatar: users.avatar,
+      })
+      .from(boardComments)
+      .leftJoin(users, eq(boardComments.userId, users.id))
+      .where(eq(boardComments.postId, postId))
+      .orderBy(boardComments.createdAt);
     return { success: true, data: result };
   } catch (error) {
     console.error("Error fetching comments:", error);

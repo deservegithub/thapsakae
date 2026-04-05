@@ -1,14 +1,34 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { marketplaceItems } from "@/lib/db/schema";
+import { marketplaceItems, users } from "@/lib/db/schema";
 import { eq, desc, and, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, requireAuth } from "@/lib/auth-check";
 
 export async function getMarketplaceItems() {
   try {
-    const result = await db.select().from(marketplaceItems).orderBy(desc(marketplaceItems.createdAt));
+    const result = await db
+      .select({
+        id: marketplaceItems.id,
+        title: marketplaceItems.title,
+        slug: marketplaceItems.slug,
+        description: marketplaceItems.description,
+        price: marketplaceItems.price,
+        category: marketplaceItems.category,
+        condition: marketplaceItems.condition,
+        images: marketplaceItems.images,
+        sellerId: marketplaceItems.sellerId,
+        status: marketplaceItems.status,
+        location: marketplaceItems.location,
+        createdAt: marketplaceItems.createdAt,
+        updatedAt: marketplaceItems.updatedAt,
+        sellerName: users.name,
+        sellerAvatar: users.avatar,
+      })
+      .from(marketplaceItems)
+      .leftJoin(users, eq(marketplaceItems.sellerId, users.id))
+      .orderBy(desc(marketplaceItems.createdAt));
     return { success: true, data: result };
   } catch (error) {
     console.error("Error fetching marketplace items:", error);
@@ -18,7 +38,28 @@ export async function getMarketplaceItems() {
 
 export async function getMarketplaceItemById(id: string) {
   try {
-    const result = await db.select().from(marketplaceItems).where(eq(marketplaceItems.id, id)).limit(1);
+    const result = await db
+      .select({
+        id: marketplaceItems.id,
+        title: marketplaceItems.title,
+        slug: marketplaceItems.slug,
+        description: marketplaceItems.description,
+        price: marketplaceItems.price,
+        category: marketplaceItems.category,
+        condition: marketplaceItems.condition,
+        images: marketplaceItems.images,
+        sellerId: marketplaceItems.sellerId,
+        status: marketplaceItems.status,
+        location: marketplaceItems.location,
+        createdAt: marketplaceItems.createdAt,
+        updatedAt: marketplaceItems.updatedAt,
+        sellerName: users.name,
+        sellerAvatar: users.avatar,
+      })
+      .from(marketplaceItems)
+      .leftJoin(users, eq(marketplaceItems.sellerId, users.id))
+      .where(eq(marketplaceItems.id, id))
+      .limit(1);
     if (result.length === 0) {
       return { success: false, error: "ไม่พบสินค้าที่ต้องการ" };
     }
