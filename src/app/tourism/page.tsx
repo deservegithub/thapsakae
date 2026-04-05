@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, Users } from "lucide-react";
@@ -6,6 +7,16 @@ import { getTourismSpots } from "@/actions/tourism";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+
+export const metadata: Metadata = {
+  title: "สถานที่ท่องเที่ยว",
+  description: "สถานที่ท่องเที่ยวทับสะแก วัด ธรรมชาติ วัฒนธรรม ชายหาด เมืองมะพร้าวทะเล ประจวบคีรีขันธ์",
+  openGraph: {
+    title: "ท่องเที่ยวทับสะแก",
+    description: "ค้นหาสถานที่ท่องเที่ยว วัด ชายหาด ธรรมชาติในทับสะแก",
+    images: [{ url: "/api/og?title=ท่องเที่ยวทับสะแก&type=tourism", width: 1200, height: 630 }],
+  },
+};
 
 const ITEMS_PER_PAGE = 12;
 

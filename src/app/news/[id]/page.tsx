@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Eye, User, ArrowLeft } from "lucide-react";
@@ -5,6 +6,25 @@ import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getNewsById, getRelatedNews } from "@/actions/news";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const response = await getNewsById(id);
+  if (!response.success || !response.data) return { title: "ไม่พบข่าว" };
+  const news = response.data;
+  const ogImage = news.coverImage || `/api/og?title=${encodeURIComponent(news.title)}&type=news`;
+  return {
+    title: news.title,
+    description: news.excerpt || news.title,
+    openGraph: {
+      title: news.title,
+      description: news.excerpt || news.title,
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title: news.title, description: news.excerpt || news.title },
+  };
+}
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

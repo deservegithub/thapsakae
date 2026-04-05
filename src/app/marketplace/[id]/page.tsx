@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowLeft, MessageCircle, Phone } from "lucide-react";
@@ -5,6 +6,26 @@ import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getMarketplaceItemById, getRelatedMarketplaceItems } from "@/actions/marketplace";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const response = await getMarketplaceItemById(id);
+  if (!response.success || !response.data) return { title: "ไม่พบสินค้า" };
+  const item = response.data;
+  const desc = `${item.title} - ฿${Number(item.price).toLocaleString()} ${item.location || "ทับสะแก"}`.slice(0, 160);
+  const ogImage = item.images?.[0] || `/api/og?title=${encodeURIComponent(item.title)}&type=marketplace`;
+  return {
+    title: item.title,
+    description: desc,
+    openGraph: {
+      title: item.title,
+      description: desc,
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title: item.title, description: desc },
+  };
+}
 
 export default async function MarketplaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -11,9 +11,32 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-  title: "ตำบลทับสะแก - เมืองมะพร้าวทะเล",
-  description: "เว็บไซต์ตำบลทับสะแก อำเภอเมือง จังหวัดประจวบคีรีขันธ์ ข่าวสาร ร้านค้า ท่องเที่ยว หางาน",
-  keywords: "ทับสะแก, ประจวบคีรีขันธ์, ท่องเที่ยว, ร้านค้า, หางาน",
+  metadataBase: new URL("https://www.thapsakaefocus.com"),
+  title: {
+    default: "ตำบลทับสะแก - เมืองมะพร้าวทะเล",
+    template: "%s | ทับสะแกโฟกัส",
+  },
+  description: "เว็บไซต์ตำบลทับสะแก อำเภอทับสะแก จังหวัดประจวบคีรีขันธ์ ข่าวสาร ร้านค้า ท่องเที่ยว หางาน เว็บบอร์ด ซื้อขาย จองคิว",
+  keywords: ["ทับสะแก", "ประจวบคีรีขันธ์", "ท่องเที่ยวทับสะแก", "ร้านค้าทับสะแก", "หางานทับสะแก", "ข่าวทับสะแก", "เมืองมะพร้าวทะเล"],
+  authors: [{ name: "ทับสะแกโฟกัส" }],
+  openGraph: {
+    type: "website",
+    locale: "th_TH",
+    siteName: "ทับสะแกโฟกัส",
+    title: "ตำบลทับสะแก - เมืองมะพร้าวทะเล",
+    description: "เว็บไซต์ตำบลทับสะแก ข่าวสาร ร้านค้า ท่องเที่ยว หางาน เว็บบอร์ด ซื้อขาย",
+    url: "https://www.thapsakaefocus.com",
+    images: [{ url: "/api/og?title=ทับสะแกโฟกัส&type=home", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ตำบลทับสะแก - เมืองมะพร้าวทะเล",
+    description: "เว็บไซต์ตำบลทับสะแก ข่าวสาร ร้านค้า ท่องเที่ยว หางาน เว็บบอร์ด ซื้อขาย",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

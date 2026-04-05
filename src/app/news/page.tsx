@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Eye } from "lucide-react";
@@ -8,6 +9,16 @@ import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "ข่าวประชาสัมพันธ์",
+  description: "ข่าวสารและกิจกรรมของตำบลทับสะแก อำเภอทับสะแก จังหวัดประจวบคีรีขันธ์ อัปเดตล่าสุด",
+  openGraph: {
+    title: "ข่าวประชาสัมพันธ์ตำบลทับสะแก",
+    description: "ข่าวสาร ประกาศ และกิจกรรมของตำบลทับสะแก",
+    images: [{ url: "/api/og?title=ข่าวประชาสัมพันธ์&type=news", width: 1200, height: 630 }],
+  },
+};
 
 const newsFilters = [
   { label: "ทั้งหมด", value: "" },

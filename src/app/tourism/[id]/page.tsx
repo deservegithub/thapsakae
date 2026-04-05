@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowLeft, Star } from "lucide-react";
@@ -6,6 +7,25 @@ import Link from "next/link";
 import { getTourismSpotById, getRelatedTourismSpots } from "@/actions/tourism";
 import { ReviewSection } from "@/components/tourism/ReviewSection";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const response = await getTourismSpotById(id);
+  if (!response.success || !response.data) return { title: "ไม่พบสถานที่" };
+  const spot = response.data;
+  const ogImage = spot.images?.[0] || `/api/og?title=${encodeURIComponent(spot.name)}&type=tourism`;
+  return {
+    title: spot.name,
+    description: spot.description.slice(0, 160),
+    openGraph: {
+      title: spot.name,
+      description: spot.description.slice(0, 160),
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title: spot.name, description: spot.description.slice(0, 160) },
+  };
+}
 
 export default async function TourismDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

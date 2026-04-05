@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, Star } from "lucide-react";
@@ -6,6 +7,16 @@ import { getApprovedShops } from "@/actions/shops";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+
+export const metadata: Metadata = {
+  title: "ร้านค้าและบริการ",
+  description: "รวมร้านค้า ร้านอาหาร และบริการในตำบลทับสะแก อำเภอทับสะแก ประจวบคีรีขันธ์",
+  openGraph: {
+    title: "ร้านค้าและบริการทับสะแก",
+    description: "ค้นหาร้านค้า ร้านอาหาร และบริการในทับสะแก",
+    images: [{ url: "/api/og?title=ร้านค้าและบริการ&type=shops", width: 1200, height: 630 }],
+  },
+};
 
 const ITEMS_PER_PAGE = 12;
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, DollarSign, Clock } from "lucide-react";
@@ -6,6 +7,16 @@ import { getActiveJobs } from "@/actions/jobs";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+
+export const metadata: Metadata = {
+  title: "หางานทับสะแก",
+  description: "ประกาศหางาน สมัครงาน ตำแหน่งงานว่างในตำบลทับสะแก อำเภอทับสะแก ประจวบคีรีขันธ์",
+  openGraph: {
+    title: "หางานทับสะแก",
+    description: "ค้นหางาน สมัครงาน ตำแหน่งงานว่างในทับสะแก",
+    images: [{ url: "/api/og?title=หางานทับสะแก&type=jobs", width: 1200, height: 630 }],
+  },
+};
 
 const ITEMS_PER_PAGE = 12;
 

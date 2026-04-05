@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, Globe, Facebook, ArrowLeft, Star } from "lucide-react";
@@ -5,6 +6,25 @@ import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getShopById, getRelatedShops } from "@/actions/shops";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const response = await getShopById(id);
+  if (!response.success || !response.data) return { title: "ไม่พบร้านค้า" };
+  const shop = response.data;
+  const ogImage = shop.images?.[0] || `/api/og?title=${encodeURIComponent(shop.name)}&type=shops`;
+  return {
+    title: shop.name,
+    description: shop.description.slice(0, 160),
+    openGraph: {
+      title: shop.name,
+      description: shop.description.slice(0, 160),
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title: shop.name, description: shop.description.slice(0, 160) },
+  };
+}
 
 export default async function ShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

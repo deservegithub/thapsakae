@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin, DollarSign, Clock, Mail, Phone, ArrowLeft, Calendar } from "lucide-react";
@@ -5,6 +6,25 @@ import { ShareButton } from "@/components/ui/share-button";
 import Link from "next/link";
 import { getJobById } from "@/actions/jobs";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const response = await getJobById(id);
+  if (!response.success || !response.data) return { title: "ไม่พบประกาศงาน" };
+  const job = response.data;
+  const desc = `${job.title} - ${job.company} ${job.location || "ทับสะแก"}`.slice(0, 160);
+  return {
+    title: `${job.title} - ${job.company}`,
+    description: desc,
+    openGraph: {
+      title: `${job.title} - ${job.company}`,
+      description: desc,
+      type: "article",
+      images: [{ url: `/api/og?title=${encodeURIComponent(job.title)}&type=jobs`, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title: job.title, description: desc },
+  };
+}
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

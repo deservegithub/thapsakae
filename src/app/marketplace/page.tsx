@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, MapPin, MessageCircle } from "lucide-react";
@@ -6,6 +7,16 @@ import { getMarketplaceItems } from "@/actions/marketplace";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+
+export const metadata: Metadata = {
+  title: "ซื้อขายทับสะแก",
+  description: "กระดานซื้อขายสินค้ามือสอง ของใหม่ ในตำบลทับสะแก อำเภอทับสะแก ประจวบคีรีขันธ์",
+  openGraph: {
+    title: "ซื้อขายทับสะแก",
+    description: "ซื้อขายสินค้า ของมือสอง ของใหม่ในทับสะแก",
+    images: [{ url: "/api/og?title=ซื้อขายทับสะแก&type=marketplace", width: 1200, height: 630 }],
+  },
+};
 
 const ITEMS_PER_PAGE = 12;
 

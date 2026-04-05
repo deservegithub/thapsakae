@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, User, Eye } from "lucide-react";
@@ -6,6 +7,16 @@ import { getBoardPosts } from "@/actions/board";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Pagination } from "@/components/shared/Pagination";
 import { paginateData } from "@/lib/utils/paginate";
+
+export const metadata: Metadata = {
+  title: "เว็บบอร์ดทับสะแก",
+  description: "กระทู้สนทนา ถาม-ตอบ แลกเปลี่ยนเรื่องราวชุมชนทับสะแก",
+  openGraph: {
+    title: "เว็บบอร์ดทับสะแก",
+    description: "ร่วมพูดคุยและแลกเปลี่ยนเรื่องราวชุมชนทับสะแก",
+    images: [{ url: "/api/og?title=เว็บบอร์ดทับสะแก&type=board", width: 1200, height: 630 }],
+  },
+};
 
 const ITEMS_PER_PAGE = 12;
 
