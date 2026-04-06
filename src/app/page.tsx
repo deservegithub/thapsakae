@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { CategorySection } from "@/components/home/CategorySection";
-import { AdBanner } from "@/components/home/AdBanner";
+// import { AdBanner } from "@/components/home/AdBanner"; // ปิดไว้ชั่วคราว
 import {
   Calendar, Eye, MapPin, Phone, Briefcase, DollarSign,
   MessageSquare, User, ShoppingCart, Newspaper, Store, Map,
@@ -87,8 +87,6 @@ export default async function Home() {
         <CategorySection counts={categoryCounts} />
       </div>
 
-      <AdBanner variant="highlight" position="A1 - หลัง Hero" />
-
       {/* ข่าวสาร */}
       <section className="py-12">
         <div className="container">
@@ -128,8 +126,6 @@ export default async function Home() {
           )}
         </div>
       </section>
-
-      <AdBanner position="A2 - หลังข่าวสาร" />
 
       {/* ร้านค้า */}
       <section className="py-12 bg-gradient-to-b from-slate-50/80 to-white">
@@ -173,8 +169,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <AdBanner variant="highlight" position="A3 - หลังร้านค้า" />
-
       {/* ท่องเที่ยว */}
       <section className="py-12">
         <div className="container">
@@ -211,8 +205,6 @@ export default async function Home() {
           )}
         </div>
       </section>
-
-      <AdBanner position="A4 - หลังท่องเที่ยว" />
 
       {/* หางาน */}
       <section className="py-12 bg-gradient-to-b from-slate-50/80 to-white">
@@ -256,8 +248,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <AdBanner variant="highlight" position="A5 - หลังหางาน" />
-
       {/* เว็บบอร์ด */}
       <section className="py-12">
         <div className="container">
@@ -290,8 +280,6 @@ export default async function Home() {
           )}
         </div>
       </section>
-
-      <AdBanner position="A6 - หลังเว็บบอร์ด" />
 
       {/* ซื้อขาย */}
       <section className="py-12 bg-gradient-to-b from-slate-50/80 to-white">

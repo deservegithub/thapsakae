@@ -152,7 +152,7 @@ export default function ContactPage() {
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="">เลือกหัวข้อ</option>
-                      <option value="advertising">ติดต่อโฆษณา</option>
+                      {/* <option value="advertising">ติดต่อโฆษณา</option> ปิดไว้ชั่วคราว */}
                       <option value="inquiry">สอบถามข้อมูล</option>
                       <option value="suggestion">ข้อเสนอแนะ</option>
                       <option value="complaint">ร้องเรียน</option>
