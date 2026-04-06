@@ -14,7 +14,7 @@ const navLinks = [
   { href: "/tourism", label: "ท่องเที่ยว" },
   { href: "/jobs", label: "หางาน" },
   { href: "/board", label: "เว็บบอร์ด" },
-  { href: "/marketplace", label: "ซื้อขาย" },
+  // { href: "/marketplace", label: "ซื้อขาย" }, // ปิดไว้ชั่วคราว
 ];
 
 export function Header() {

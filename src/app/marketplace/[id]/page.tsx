@@ -1,3 +1,12 @@
+// NOTE: ฟีเจอร์ซื้อขายปิดไว้ชั่วคราว — redirect ไปหน้า coming soon
+import { redirect } from "next/navigation";
+
+export default function MarketplaceDetailPage() {
+  redirect("/marketplace");
+}
+
+/* --- โค้ดเดิมเก็บไว้ด้านล่าง เปิดใช้ใหม่ได้จาก git history ---
+
 import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -212,3 +221,4 @@ export default async function MarketplaceDetailPage({ params }: { params: Promis
     </div>
   );
 }
+*/

@@ -14,7 +14,7 @@ import { getApprovedShops } from "@/actions/shops";
 import { getTourismSpots } from "@/actions/tourism";
 import { getActiveJobs } from "@/actions/jobs";
 import { getBoardPosts } from "@/actions/board";
-import { getMarketplaceItems } from "@/actions/marketplace";
+// import { getMarketplaceItems } from "@/actions/marketplace"; // ปิดไว้ชั่วคราว
 
 function SectionHeader({ icon: Icon, iconBg, iconColor, title, href }: {
   icon: any; iconBg: string; iconColor: string; title: string; href: string;
@@ -38,13 +38,13 @@ function SectionHeader({ icon: Icon, iconBg, iconColor, title, href }: {
 }
 
 export default async function Home() {
-  const [newsRes, shopsRes, tourismRes, jobsRes, boardRes, marketRes] = await Promise.all([
+  const [newsRes, shopsRes, tourismRes, jobsRes, boardRes] = await Promise.all([
     getPublishedNews(),
     getApprovedShops(),
     getTourismSpots(),
     getActiveJobs(),
     getBoardPosts(),
-    getMarketplaceItems(),
+    // getMarketplaceItems(), // ปิดไว้ชั่วคราว
   ]);
 
   const allNews = newsRes.success ? newsRes.data || [] : [];
@@ -52,14 +52,14 @@ export default async function Home() {
   const allTourism = tourismRes.success ? tourismRes.data || [] : [];
   const allJobs = jobsRes.success ? jobsRes.data || [] : [];
   const allBoard = boardRes.success ? boardRes.data || [] : [];
-  const allMarket = marketRes.success ? marketRes.data || [] : [];
+  // const allMarket = marketRes.success ? marketRes.data || [] : []; // ปิดไว้ชั่วคราว
 
   const newsList = allNews.slice(0, 3);
   const shopsList = allShops.slice(0, 3);
   const tourismList = allTourism.slice(0, 3);
   const jobsList = allJobs.slice(0, 3);
   const boardList = allBoard.slice(0, 3);
-  const marketList = allMarket.slice(0, 3);
+  // const marketList = allMarket.slice(0, 3); // ปิดไว้ชั่วคราว
 
   const categoryCounts = {
     news: allNews.length,
@@ -67,7 +67,7 @@ export default async function Home() {
     tourism: allTourism.length,
     jobs: allJobs.length,
     board: allBoard.length,
-    marketplace: allMarket.length,
+    marketplace: 0, // ปิดไว้ชั่วคราว
   };
 
   const getEmploymentTypeLabel = (type: string) => {
@@ -293,45 +293,7 @@ export default async function Home() {
 
       <AdBanner position="A6 - หลังเว็บบอร์ด" />
 
-      {/* ซื้อขาย */}
-      <section className="py-12 bg-gradient-to-b from-slate-50/80 to-white">
-        <div className="container">
-          <SectionHeader icon={ShoppingCart} iconBg="bg-rose-50" iconColor="text-rose-600" title="ซื้อขาย" href="/marketplace" />
-          {marketList.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {marketList.map((item) => (
-                <Link key={item.id} href={`/marketplace/${item.id}`}>
-                  <Card className="overflow-hidden hover-lift h-full border-0 shadow-sm bg-white group">
-                    <div className="relative h-52 overflow-hidden">
-                      {item.images && item.images.length > 0 ? (
-                        <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center text-rose-300">
-                          <ShoppingCart className="h-12 w-12" />
-                        </div>
-                      )}
-                      <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm text-primary font-bold px-3 py-1.5 rounded-full text-sm shadow-sm">
-                        ฿{Number(item.price).toLocaleString()}
-                      </span>
-                    </div>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="line-clamp-1 text-lg group-hover:text-primary transition-colors">{item.title}</CardTitle>
-                      <CardDescription className="line-clamp-2">{item.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5 flex-shrink-0 text-rose-500" /><span>{item.location}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground py-8">ยังไม่มีสินค้า</p>
-          )}
-        </div>
-      </section>
+      {/* ซื้อขาย — ปิดไว้ชั่วคราว */}
 
       {/* CTA */}
       <section className="relative py-20 overflow-hidden">

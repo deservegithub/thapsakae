@@ -46,7 +46,7 @@ export function Footer() {
                 { href: "/tourism", label: "ท่องเที่ยว" },
                 { href: "/jobs", label: "หางาน" },
                 { href: "/board", label: "เว็บบอร์ด" },
-                { href: "/marketplace", label: "ซื้อขาย" },
+                // { href: "/marketplace", label: "ซื้อขาย" }, // ปิดไว้ชั่วคราว
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="hover:text-white transition-colors inline-flex items-center gap-1 group">

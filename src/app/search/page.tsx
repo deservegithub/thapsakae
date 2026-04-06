@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SearchBar } from "@/components/shared/SearchBar";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { news, shops, tourism, jobs, boardPosts, marketplaceItems } from "@/lib/db/schema";
+import { news, shops, tourism, jobs, boardPosts } from "@/lib/db/schema"; // marketplaceItems ปิดไว้ชั่วคราว
 import { ilike, or } from "drizzle-orm";
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -14,13 +14,13 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   if (query) {
     const pattern = `%${query}%`;
 
-    const [newsResults, shopsResults, tourismResults, jobsResults, boardResults, marketResults] = await Promise.all([
+    const [newsResults, shopsResults, tourismResults, jobsResults, boardResults] = await Promise.all([
       db.select().from(news).where(or(ilike(news.title, pattern), ilike(news.content, pattern))).limit(10),
       db.select().from(shops).where(or(ilike(shops.name, pattern), ilike(shops.description, pattern))).limit(10),
       db.select().from(tourism).where(or(ilike(tourism.name, pattern), ilike(tourism.description, pattern))).limit(10),
       db.select().from(jobs).where(or(ilike(jobs.title, pattern), ilike(jobs.description, pattern))).limit(10),
       db.select().from(boardPosts).where(or(ilike(boardPosts.title, pattern), ilike(boardPosts.content, pattern))).limit(10),
-      db.select().from(marketplaceItems).where(or(ilike(marketplaceItems.title, pattern), ilike(marketplaceItems.description, pattern))).limit(10),
+      // db.select().from(marketplaceItems).where(or(ilike(marketplaceItems.title, pattern), ilike(marketplaceItems.description, pattern))).limit(10), // ปิดไว้ชั่วคราว
     ]);
 
     results = [
@@ -29,14 +29,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       ...tourismResults.map((t) => ({ type: "ท่องเที่ยว", id: t.id, title: t.name, description: t.description.slice(0, 120), href: `/tourism/${t.id}` })),
       ...jobsResults.map((j) => ({ type: "หางาน", id: j.id, title: j.title, description: j.description.slice(0, 120), href: `/jobs/${j.id}` })),
       ...boardResults.map((b) => ({ type: "เว็บบอร์ด", id: b.id, title: b.title, description: b.content.slice(0, 120), href: `/board/${b.id}` })),
-      ...marketResults.map((m) => ({ type: `ซื้อขาย ฿${parseFloat(m.price).toLocaleString()}`, id: m.id, title: m.title, description: m.description.slice(0, 120), href: `/marketplace/${m.id}` })),
+      // ...marketResults.map(...) // ปิดไว้ชั่วคราว
     ];
   }
 
   return (
     <div className="container py-12">
       <h1 className="text-4xl font-bold mb-4">ค้นหา</h1>
-      <p className="text-lg text-muted-foreground mb-8">ค้นหาข้อมูลข่าวสาร ร้านค้า สถานที่ท่องเที่ยว งาน เว็บบอร์ด และซื้อขาย</p>
+      <p className="text-lg text-muted-foreground mb-8">ค้นหาข้อมูลข่าวสาร ร้านค้า สถานที่ท่องเที่ยว งาน และเว็บบอร์ด</p>
 
       <SearchBar placeholder="พิมพ์คำค้นหา..." className="max-w-2xl mb-8" />
 

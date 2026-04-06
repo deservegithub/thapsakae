@@ -19,7 +19,7 @@ export function CategorySection({ counts }: CategorySectionProps) {
     { name: "ท่องเที่ยว", icon: MapPin, href: "/tourism", gradient: "from-violet-500 to-purple-400", bg: "bg-violet-50", text: "text-violet-600", count: counts?.tourism ?? 0 },
     { name: "หางาน", icon: Briefcase, href: "/jobs", gradient: "from-amber-500 to-orange-400", bg: "bg-amber-50", text: "text-amber-600", count: counts?.jobs ?? 0 },
     { name: "เว็บบอร์ด", icon: MessageSquare, href: "/board", gradient: "from-pink-500 to-rose-400", bg: "bg-pink-50", text: "text-pink-600", count: counts?.board ?? 0 },
-    { name: "ซื้อขาย", icon: ShoppingCart, href: "/marketplace", gradient: "from-teal-500 to-cyan-400", bg: "bg-teal-50", text: "text-teal-600", count: counts?.marketplace ?? 0 },
+    // { name: "ซื้อขาย", icon: ShoppingCart, href: "/marketplace", gradient: "from-teal-500 to-cyan-400", bg: "bg-teal-50", text: "text-teal-600", count: counts?.marketplace ?? 0 }, // ปิดไว้ชั่วคราว
   ];
 
   return (
