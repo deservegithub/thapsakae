@@ -1,12 +1,3 @@
-// NOTE: ฟีเจอร์ซื้อขายปิดไว้ชั่วคราว — redirect ไปหน้า coming soon
-import { redirect } from "next/navigation";
-
-export default function CreateMarketplaceItemPage() {
-  redirect("/marketplace");
-}
-
-/* --- โค้ดเดิมเก็บไว้ด้านล่าง เปิดใช้ใหม่ได้จาก git history ---
-
 "use client";
 
 import { useState } from "react";
@@ -266,4 +257,3 @@ export default function CreateMarketplaceItemPage() {
     </div>
   );
 }
-*/

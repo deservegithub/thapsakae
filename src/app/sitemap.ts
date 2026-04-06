@@ -1,6 +1,6 @@
- import { MetadataRoute } from "next";
+import { MetadataRoute } from "next";
 import { db } from "@/lib/db";
-import { news, shops, tourism, jobs, boardPosts } from "@/lib/db/schema"; // marketplaceItems ปิดไว้ชั่วคราว
+import { news, shops, tourism, jobs, boardPosts, marketplaceItems } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 const BASE_URL = "https://www.thapsakaefocus.com";
@@ -14,20 +14,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/tourism`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE_URL}/jobs`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/board`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
-    // { url: `${BASE_URL}/marketplace`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 }, // ปิดไว้ชั่วคราว
+    { url: `${BASE_URL}/marketplace`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
     { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
 
   // Dynamic pages from DB
-  const [allNews, allShops, allTourism, allJobs, allBoard] = await Promise.all([
+  const [allNews, allShops, allTourism, allJobs, allBoard, allMarket] = await Promise.all([
     db.select({ id: news.id, updatedAt: news.updatedAt }).from(news).orderBy(desc(news.createdAt)),
     db.select({ id: shops.id, updatedAt: shops.updatedAt }).from(shops).where(eq(shops.approved, true)).orderBy(desc(shops.createdAt)),
     db.select({ id: tourism.id, updatedAt: tourism.updatedAt }).from(tourism).orderBy(desc(tourism.createdAt)),
     db.select({ id: jobs.id, updatedAt: jobs.updatedAt }).from(jobs).where(eq(jobs.active, true)).orderBy(desc(jobs.createdAt)),
     db.select({ id: boardPosts.id, updatedAt: boardPosts.updatedAt }).from(boardPosts).orderBy(desc(boardPosts.createdAt)),
-    // db.select({ id: marketplaceItems.id, updatedAt: marketplaceItems.updatedAt }).from(marketplaceItems).where(eq(marketplaceItems.status, "available")).orderBy(desc(marketplaceItems.createdAt)), // ปิดไว้ชั่วคราว
+    db.select({ id: marketplaceItems.id, updatedAt: marketplaceItems.updatedAt }).from(marketplaceItems).where(eq(marketplaceItems.status, "available")).orderBy(desc(marketplaceItems.createdAt)),
   ]);
 
   const newsPages: MetadataRoute.Sitemap = allNews.map((item) => ({
@@ -65,13 +65,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  // marketPages ปิดไว้ชั่วคราว
-  // const marketPages: MetadataRoute.Sitemap = allMarket.map((item) => ({
-  //   url: `${BASE_URL}/marketplace/${item.id}`,
-  //   lastModified: item.updatedAt,
-  //   changeFrequency: "weekly",
-  //   priority: 0.5,
-  // }));
+  const marketPages: MetadataRoute.Sitemap = allMarket.map((item) => ({
+    url: `${BASE_URL}/marketplace/${item.id}`,
+    lastModified: item.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.5,
+  }));
 
   return [
     ...staticPages,
@@ -80,6 +79,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tourismPages,
     ...jobPages,
     ...boardPages,
-    // ...marketPages, // ปิดไว้ชั่วคราว
+    ...marketPages,
   ];
 }
